@@ -124,6 +124,7 @@ public class BodyPart {
     }
     // new beat
     else if (heartState > 0 && !beating) {
+      beating = true;
       animate();
     }
 
