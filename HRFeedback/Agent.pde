@@ -33,14 +33,16 @@ public class Agent {
 
     hearts = new  BodyPart[nbHearts];
 
-    // space between hearts
-    int space = 400;
+
+    // but hearts in circle
+    float radius=AGENT_WIDTH/2;
+    float angle=TWO_PI/(float)this.nbHearts;
 
     for (int i = 0; i < nbHearts; i++) {
       hearts[i] = new BodyPart(Body.Type.HEART, Body.Genre.BOTH, "beat.wav");
       // the original SVG is a bit too big
       hearts[i].getPShape().scale(0.66);
-      hearts[i].setPos(0+space*i, 0);
+      hearts[i].setPos(radius*sin(angle*i) + AGENT_WIDTH, radius*cos(angle*i) + AGENT_HEIGHT/2);
       hearts[i].setAnimationSpeed(45);
     }
 

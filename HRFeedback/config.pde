@@ -11,7 +11,7 @@ final int TCPServerPort = 5678;
 final int FPS = 0;
 
 // how many hearts we got for our experiment?
-final int nbHearts = 2;
+final int nbHearts = 3;
 
 // start experiment in fullscreen or not
 final boolean START_FULLSCREEN = false;

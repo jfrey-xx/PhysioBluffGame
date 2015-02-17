@@ -104,6 +104,21 @@ void draw() {
   // update agent
   // update every part, deals all animations
   masterHeart.update(heartsState);
+
+  // Now show it, by default agent takes 1/1 of the screen
+  float agentSpace = 1;
+
+  // original agent size is fixed (see Agent). Center on X, scale on Y.
+  // The real scale of agent is a little less than "agentSpace" because there is space left above and under
+  float agentScale = (agentSpace * 18/20) * height / Agent.AGENT_HEIGHT;
+  // center by hand on X, on top on Y
+  float agentX = (width - (Agent.AGENT_WIDTH*agentScale)) / 2;
+  // 1/20 margin
+  float agentY = height * (agentScale * 1/20);
+
+  // reset previous scale, apply new one
+  masterHeart.getPShape().resetMatrix();
+  masterHeart.getPShape().scale(agentScale);
   shape(masterHeart.getPShape(), 0, 0);
 }
 
