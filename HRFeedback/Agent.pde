@@ -5,6 +5,11 @@
 // WARNING: should call cleanup() when the agent is not needed
 public class Agent {
 
+  // list of sounds for beats
+  public final String BEATS_SOUNDS [] = {
+    "beat.wav", "laser.wav", "tone-beep.wav", "xsnare-short.wav"
+  };
+
   // The screen space occupied by agents is believed to be a certain size (in pixels).
   public static final int AGENT_WIDTH = 800;
   public static final int AGENT_HEIGHT = 850;
@@ -39,7 +44,8 @@ public class Agent {
     float angle=TWO_PI/(float)this.nbHearts;
 
     for (int i = 0; i < nbHearts; i++) {
-      hearts[i] = new BodyPart(Body.Type.HEART, Body.Genre.BOTH, "beat.wav");
+      // loop on available sound samples
+      hearts[i] = new BodyPart(Body.Type.HEART, Body.Genre.BOTH, BEATS_SOUNDS[i%BEATS_SOUNDS.length]);
       // the original SVG is a bit too big
       hearts[i].getPShape().scale(0.66);
       hearts[i].setPos(radius*sin(angle*i) + AGENT_WIDTH, radius*cos(angle*i) + AGENT_HEIGHT/2);
