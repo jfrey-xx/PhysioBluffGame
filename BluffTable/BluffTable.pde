@@ -78,10 +78,11 @@ void setup() {
     }
   }
 
-
   AmbientFeedback ambientFeedback = new AmbientFeedback();
-  Puppet puppet = new Puppet();
+  HeartFeedback heartFeedback1 = new HeartFeedback();
 
+  HeartFeedback heartFeedback2 = new HeartFeedback();
+  heartFeedback2.noCameraLocationX = 200;
 
   if (!noCameraMode)
     papart.startTracking();
