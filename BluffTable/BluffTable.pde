@@ -19,13 +19,6 @@ int lastFPS = 0;
 
 /** FIXME: should stay inside ambientFeedback, quick'n dirty way to read those in puppet **/
 
-// noise levels
-double EEGNoise1 = 0f;
-double EEGNoise2 = 0f;
-// corresponding thresholds for detection 
-double ThresholdNoise1 = 0f;
-double ThresholdNoise2 = 0f;
-
 // One (ambient + heart) feedback per player 
 AmbientFeedback[] ambientFeedbacks;
 HeartFeedback[] heartFeedbacks;
@@ -84,8 +77,8 @@ void setup() {
   heartFeedbacks = new HeartFeedback[nbPlayers]; 
 
   for (int i = 0; i < nbPlayers; i++) {
-    ambientFeedbacks[i] = new AmbientFeedback();
-    heartFeedbacks[i] = new HeartFeedback();
+    ambientFeedbacks[i] = new AmbientFeedback(i);
+    heartFeedbacks[i] = new HeartFeedback(i);
     // space for noCameraMode
     ambientFeedbacks[i].noCameraLocationX = 200 * i;
     heartFeedbacks[i].noCameraLocationX = 200 * i;

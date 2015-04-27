@@ -9,6 +9,13 @@ public class HeartFeedback  extends PaperScreen {
   int noCameraLocationX = 0;
   int noCameraLocationY = 0;
 
+  int playerID;
+
+  // we need an ID to read from LSL
+  public HeartFeedback(int playerID) {
+    this.playerID = playerID;
+  }
+
   void setup() {
     setDrawingSize(297, 210);
     loadMarkerBoard(sketchPath + "/data/patient.cfg", 297, 210);

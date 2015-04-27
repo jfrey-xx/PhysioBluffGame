@@ -3,7 +3,6 @@ import processing.net.*;
 import fr.inria.papart.drawingapp.DrawUtils;
 import fr.inria.guimodes.SecondaryMode;
 
-
 // codes associated to feeback -- cf initModes() for corresponding names.
 // NB: use sequential codes from 0 to nbSecondModes...
 
@@ -21,14 +20,15 @@ final int SECOND_EXPLICIT_STOP = 6;
 final int nbModes = 7;
 String[] secondModes = new String[nbModes];
 
-
 public class AmbientFeedback  extends PaperScreen {
 
   // position for noCamera
   int noCameraLocationX = 0;
   int noCameraLocationY = 0;
 
-  //ReadAnalog myClient; 
+  // we need two stream, one for idx, one for detection
+  ReaderLSL readerBPM, readerDetection;
+  
   PShader pixelize, waves, white_noise;
   PGraphics feedbackAmbient, feedbackExplicit, scene;
 
@@ -58,13 +58,20 @@ public class AmbientFeedback  extends PaperScreen {
 
   SecondaryMode mode;
 
+  int playerID;
+
+  // we need an ID to read from LSL
+  public AmbientFeedback(int playerID) {
+    this.playerID = playerID;
+  }
+
   void setup() {
     setDrawingSize(ambientWidth, ambientHeight);
     loadMarkerBoard(sketchPath + "/data/A3-small1.cfg", ambientWidth, ambientHeight);
 
     initShaders();
     initModes();
-    if (feedbackReadFromTCP) {
+    if (feedbackFromNetwork) {
       initNetwork();
     }
 
@@ -89,8 +96,8 @@ public class AmbientFeedback  extends PaperScreen {
   }
 
   private void initNetwork() {
-    // init client, first attempt to connect. We want 5 channels in input.
-    //myClient = new ReadAnalog(parent, feedbackTCPServerIP, feedbackTCPServerPort, false, 5);
+    readerBPM = new ReaderLSL(LSLBPMStream, playerID);
+    readerDetection = new ReaderLSL(LSLDetectionStream, playerID);
   }
 
   private void initShaders() {
@@ -132,7 +139,7 @@ public class AmbientFeedback  extends PaperScreen {
   void draw() {
 
     // only read data from network (and update accordingly mode) if option set
-    if (feedbackReadFromTCP) {
+    if (feedbackFromNetwork) {
       updateNetwork();
     }
 
@@ -166,23 +173,17 @@ public class AmbientFeedback  extends PaperScreen {
     endDraw();
   }
 
-  // read data from openvibe, update internal state
+  // read data from LSL, update internal state
   // TODO: not many verifications about data at the moment...
   void updateNetwork() {
-    double[][] data = null; //myClient.read();
+    double[] dataBPM = readerBPM.read();
+    double[] dataDetection = readerDetection.read();
+    
     // update something only if we got data
-    if (data != null) {
-      // Don't bother with chunks, only read first value of each channel (what should be anyway). Ensured number of channels upon creation.
-
-      // first channel: current condition
-      condition = round((float) data[0][0]);
-      // then noise/threshold for level 1
-      EEGNoise1 = data[1][0];
-      ThresholdNoise1 = data[2][0];
-      // and same for level 2
-      EEGNoise2 = data[3][0];
-      ThresholdNoise2 = data[4][0];
-
+    if (dataBPM != null && dataDetection != null) {
+      double idx = dataBPM[0];
+      double detection = dataDetection[0];
+      
       // temp variable to detect change; not sure I'd used modes...
       String newMode = "clear";
 
@@ -194,10 +195,10 @@ public class AmbientFeedback  extends PaperScreen {
       } else {
         // current stae of noise
         noiseLevel = 0;
-        // level2 wins
-        if (EEGNoise2 > ThresholdNoise2) {
+        // no face wins
+        if (detection < 1) {
           noiseLevel = 2;
-        } else if (EEGNoise1 > ThresholdNoise1) {
+        } else if (idx < ThresholdIdx) {
           noiseLevel = 1;
         }
         // would be *really* simpler without modes
