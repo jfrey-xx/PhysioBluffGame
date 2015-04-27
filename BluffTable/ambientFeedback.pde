@@ -1,8 +1,10 @@
 import fr.inria.openvibelink.read.*; //FIXME: temp version of lib
 import processing.net.*; 
 import fr.inria.papart.drawingapp.DrawUtils;
+import fr.inria.guimodes.SecondaryMode;
 
-// codes associated to feeback -- cf loadSecondMode() for corresponding names.
+
+// codes associated to feeback -- cf initModes() for corresponding names.
 // NB: use sequential codes from 0 to nbSecondModes...
 
 final int SECOND_MODE_CLEAR = 0;
@@ -16,17 +18,15 @@ final int SECOND_EXPLICIT_WARNING = 5;
 
 final int SECOND_EXPLICIT_STOP = 6;
 
-final int nbSecondModes = 7;
-String[] secondModes = new String[nbSecondModes];
+final int nbModes = 7;
+String[] secondModes = new String[nbModes];
 
-// FIXME: should be in the class, put here to have access in teegi for keyboard
-// current and max noise level
-int maxNoiseLevel = 2;
-int noiseLevel = 0;
-// triggers shaky movements at this level and upper
-int noiseShakyLevel = 2;
 
 public class AmbientFeedback  extends PaperScreen {
+
+  // position for noCamera
+  int noCameraLocationX = 0;
+  int noCameraLocationY = 0;
 
   //ReadAnalog myClient; 
   PShader pixelize, waves, white_noise;
@@ -49,14 +49,21 @@ public class AmbientFeedback  extends PaperScreen {
   // increase / descrease shacky effect (translation and speed)
   float shakyRatio = 5;
   float shakySpeed = 50;
-  /*** ***/
+
+  // current and max noise level
+  int maxNoiseLevel = 2;
+  int noiseLevel = 0;
+  // triggers shaky movements at this level and upper
+  int noiseShakyLevel = 2;
+
+  SecondaryMode mode;
 
   void setup() {
     setDrawingSize(ambientWidth, ambientHeight);
     loadMarkerBoard(sketchPath + "/data/A3-small1.cfg", ambientWidth, ambientHeight);
 
     initShaders();
-    loadSecondMode();
+    initModes();
     if (feedbackReadFromTCP) {
       initNetwork();
     }
@@ -81,14 +88,12 @@ public class AmbientFeedback  extends PaperScreen {
     signs[2] = loadImage("sign_stop.png");
   }
 
-  void initNetwork() {
+  private void initNetwork() {
     // init client, first attempt to connect. We want 5 channels in input.
     //myClient = new ReadAnalog(parent, feedbackTCPServerIP, feedbackTCPServerPort, false, 5);
   }
 
-
-
-  void initShaders() {
+  private void initShaders() {
     pixelize =    loadShader("shaders/pixelize.glsl");
     waves =       loadShader("shaders/waves.glsl");
     white_noise = loadShader("shaders/white_noise.glsl"); 
@@ -100,7 +105,9 @@ public class AmbientFeedback  extends PaperScreen {
     updateShaders();
   }
 
-  void loadSecondMode() {
+  private void initModes() {
+
+    mode = new SecondaryMode();
 
     // put a name of those ints
     secondModes[SECOND_MODE_CLEAR] = "clear";
@@ -115,28 +122,28 @@ public class AmbientFeedback  extends PaperScreen {
 
     // add modes
     for (int i=0; i < secondModes.length; i++) {
-      SecondMode.add(secondModes[i], i);
+      mode.add(secondModes[i], i);
     }
 
     // by default show off with nice waves (I wonder who programmed such a nice shader...)
-    SecondMode.set("explicit_STOP");
+    mode.set("explicit_STOP");
   }
 
   void draw() {
-    
+
     // only read data from network (and update accordingly mode) if option set
     if (feedbackReadFromTCP) {
       updateNetwork();
     }
 
     // no feedback... nothing to do
-    if (SecondMode.is("clear")) {
+    if (mode.is("clear")) {
       return;
     }
 
     // one position for dummy teegi
     if (noCameraMode) {
-      setLocation(50, 300, 0 );
+      setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
     if (isAmbientSet) {
@@ -146,11 +153,11 @@ public class AmbientFeedback  extends PaperScreen {
     beginDraw3D();
     translate(0, 0, -5);
 
-    if (SecondMode.is("waves") || SecondMode.is("pixelate") || SecondMode.is("noise")) {
+    if (mode.is("waves") || mode.is("pixelate") || mode.is("noise")) {
       updateShaders();
       drawFeedbackAmbient();
       image(feedbackAmbient, -241, -420, 789, 694);
-    } else if (SecondMode.is("explicit_OK") || SecondMode.is("explicit_WARNING") || SecondMode.is("explicit_STOP")) {
+    } else if (mode.is("explicit_OK") || mode.is("explicit_WARNING") || mode.is("explicit_STOP")) {
       drawFeedbackExplicit();
       // sepecial fuction to put image in right way + draw left to the board
       DrawUtils.drawImage(currentGraphics, feedbackExplicit, 450, 0, 150, 150);
@@ -220,9 +227,9 @@ public class AmbientFeedback  extends PaperScreen {
       }
 
       // finally, switch only in new mode
-      if (!SecondMode.is(newMode)) {
-        println("Switching to SecondMode: " + newMode);
-        SecondMode.set(newMode);
+      if (!mode.is(newMode)) {
+        println("Switching to mode: " + newMode);
+        mode.set(newMode);
       }
     }
   }
@@ -236,18 +243,18 @@ public class AmbientFeedback  extends PaperScreen {
     white_noise.set("iGlobalTime", millis()/1000.0);
   }
 
-  // to be called when SecondMode.is("waves") || SecondMode.is("pixelate") || SecondMode.is("noise")
+  // to be called when mode.is("waves") || mode.is("pixelate") || mode.is("noise")
   void drawFeedbackAmbient() {
     // waves as muscular feedback
     feedbackAmbient.beginDraw();
 
     feedbackAmbient.filter(waves);
 
-    if (SecondMode.is("pixelate")) {
+    if (mode.is("pixelate")) {
       feedbackAmbient.filter(pixelize);
     } else {
 
-      if (SecondMode.is("noise")) {
+      if (mode.is("noise")) {
         feedbackAmbient.filter(white_noise);
         feedbackAmbient.filter(pixelize);
       }
@@ -256,7 +263,7 @@ public class AmbientFeedback  extends PaperScreen {
   }
 
   // For explicit it'll be plain draw... and won't use modes in fact
-  // to be called if SecondMode.is("explicit_OK") || SecondMode.is("explicit_WARNING") || SecondMode.is("explicit_STOP")
+  // to be called if mode.is("explicit_OK") || mode.is("explicit_WARNING") || mode.is("explicit_STOP")
   void drawFeedbackExplicit() {
     feedbackExplicit.beginDraw();
     // reset background
@@ -267,7 +274,7 @@ public class AmbientFeedback  extends PaperScreen {
     // ** begin shacky effect for too noisy signals **
     if (noiseLevel >= noiseShakyLevel) {
       float shakeAmount = sin(millis()*shakySpeed/1000) * shakyRatio;
-      println(shakeAmount); // DEBUG
+      // println(shakeAmount); // DEBUG
       // shaky == translation in X
       feedbackExplicit.translate(shakeAmount, 0);
     }
@@ -281,3 +288,4 @@ public class AmbientFeedback  extends PaperScreen {
     feedbackExplicit.endDraw();
   }
 }
+

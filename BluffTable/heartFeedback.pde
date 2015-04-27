@@ -5,6 +5,7 @@ public class HeartFeedback  extends PaperScreen {
 
   BeatingHeart heart;
 
+  // position for noCamera
   int noCameraLocationX = 0;
   int noCameraLocationY = 0;
 

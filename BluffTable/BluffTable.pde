@@ -18,18 +18,20 @@ boolean useProjector;
 int lastFPS = 0;
 
 /** FIXME: should stay inside ambientFeedback, quick'n dirty way to read those in puppet **/
-// condition for feedback
-// -1 no feedback
-// 1 ambien feedback
-// 2 explicit feedback
-// 0 not set (typically, feedbackReadFromTCP == false)
-int condition = 0;
+
 // noise levels
 double EEGNoise1 = 0f;
 double EEGNoise2 = 0f;
 // corresponding thresholds for detection 
 double ThresholdNoise1 = 0f;
 double ThresholdNoise2 = 0f;
+
+// One (ambient + heart) feedback per player 
+AmbientFeedback[] ambientFeedbacks;
+HeartFeedback[] heartFeedbacks;
+
+// For manual debug, current player
+int debugPlayer = 0;
 
 // Undecorated frame 
 public void init() {
@@ -78,11 +80,16 @@ void setup() {
     }
   }
 
-  AmbientFeedback ambientFeedback = new AmbientFeedback();
-  HeartFeedback heartFeedback1 = new HeartFeedback();
+  ambientFeedbacks = new AmbientFeedback[nbPlayers];
+  heartFeedbacks = new HeartFeedback[nbPlayers]; 
 
-  HeartFeedback heartFeedback2 = new HeartFeedback();
-  heartFeedback2.noCameraLocationX = 200;
+  for (int i = 0; i < nbPlayers; i++) {
+    ambientFeedbacks[i] = new AmbientFeedback();
+    heartFeedbacks[i] = new HeartFeedback();
+    // space for noCameraMode
+    ambientFeedbacks[i].noCameraLocationX = 200 * i;
+    heartFeedbacks[i].noCameraLocationX = 200 * i;
+  }
 
   if (!noCameraMode)
     papart.startTracking();
@@ -123,32 +130,48 @@ void keyPressed() {
     System.gc();
   }
 
+  // 7/8: select player-- or player++
+  if (key == '7') {
+    debugPlayer--;
+    if (debugPlayer < 0) {
+      debugPlayer = 0;
+    }
+    println("Select player: " + debugPlayer);
+  }
+  if (key == '8') {
+    debugPlayer++;
+    if (debugPlayer >= nbPlayers) {
+      debugPlayer = nbPlayers-1;
+    }
+    println("Select player: " + debugPlayer);
+  }
+
   if (key == '0') {
-    SecondMode.set("clear");
+    ambientFeedbacks[debugPlayer].mode.set("clear");
   }
   if (key == '1') {
-    SecondMode.set("waves");
-    noiseLevel = 0;
+    ambientFeedbacks[debugPlayer].mode.set("waves");
+    ambientFeedbacks[debugPlayer].noiseLevel = 0;
   }
   if (key == '2') {
-    SecondMode.set("pixelate");
-    noiseLevel = 1;
+    ambientFeedbacks[debugPlayer].mode.set("pixelate");
+    ambientFeedbacks[debugPlayer].noiseLevel = 1;
   }
   if (key == '3') {
-    SecondMode.set("noise");
-    noiseLevel = 2;
+    ambientFeedbacks[debugPlayer].mode.set("noise");
+    ambientFeedbacks[debugPlayer].noiseLevel = 2;
   }
   if (key == '4') {
-    SecondMode.set("explicit_OK");
-    noiseLevel = 0;
+    ambientFeedbacks[debugPlayer].mode.set("explicit_OK");
+    ambientFeedbacks[debugPlayer].noiseLevel = 0;
   }
   if (key == '5') {
-    SecondMode.set("explicit_WARNING");
-    noiseLevel = 1;
+    ambientFeedbacks[debugPlayer].mode.set("explicit_WARNING");
+    ambientFeedbacks[debugPlayer].noiseLevel = 1;
   }
   if (key == '6') {
-    SecondMode.set("explicit_STOP");
-    noiseLevel = 2;
+    ambientFeedbacks[debugPlayer].mode.set("explicit_STOP");
+    ambientFeedbacks[debugPlayer].noiseLevel = 2;
   }
 }
 

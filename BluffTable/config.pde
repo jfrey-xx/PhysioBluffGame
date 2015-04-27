@@ -17,3 +17,12 @@ final int feedbackTCPServerPort = 5678;
 
 // limit main program FPS (0 to disable)
 final int limitFPS = 30;
+
+final int nbPlayers = 2;
+
+// condition for feedback
+// -1 no feedback
+// 1 ambient feedback
+// 2 explicit feedback
+// 0 not set (typically, feedbackReadFromTCP == false)
+int condition = 0;
