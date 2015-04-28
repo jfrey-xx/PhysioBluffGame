@@ -9,7 +9,11 @@ public class HeartFeedback  extends PaperScreen {
   int noCameraLocationX = 0;
   int noCameraLocationY = 0;
 
-  int playerID;
+  // one stream to read current player inner state
+  private  ReaderLSL readerBPM;
+
+  // ref for LSL stream
+  private int playerID;
 
   // we need an ID to read from LSL
   public HeartFeedback(int playerID) {
@@ -23,8 +27,12 @@ public class HeartFeedback  extends PaperScreen {
     heart = new BeatingHeart();
 
     heart.setPosition(50, 50);
-    heart.setHeartRate(80);
+    heart.setHeartRate(70);
     heart.setSize(30, 10);
+
+    if (feedbackFromNetwork) {
+      initNetwork();
+    }
   }
 
   void draw() {
@@ -33,13 +41,33 @@ public class HeartFeedback  extends PaperScreen {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
+    // only read data from network (and update accordingly mode) if option set, otherwise use a sin
+    if (feedbackFromNetwork) {
+      updateNetwork();
+    } else {
+      float sinTime = sin( (float) millis() / 7724.2f * TWO_PI / (1 + playerID));
+      heart.setHeartRate((int) (120 + 60 * sinTime));
+    }
+
     beginDraw2D();
 
-    float sinTime = sin( (float) millis() / 7724.2f * TWO_PI );
-    heart.setHeartRate((int) (120 + 60 * sinTime));
     heart.drawSelf(currentGraphics);
 
     endDraw();
+  }
+
+  // try to resolve LSL streams
+  private void initNetwork() {
+    readerBPM = new ReaderLSL(LSLBPMStream, playerID);
+  }
+
+  // read data from LSL, update internal state
+  private void updateNetwork() {
+    double[] dataBPM = readerBPM.read();
+    if (dataBPM != null && dataBPM.length > 1) {
+      double bpm = dataBPM[1];
+      heart.setHeartRate((int) bpm);
+    }
   }
 }
 

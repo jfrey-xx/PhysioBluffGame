@@ -27,8 +27,10 @@ public class AmbientFeedback  extends PaperScreen {
   int noCameraLocationY = 0;
 
   // we need two stream, one for idx, one for detection
-  ReaderLSL readerBPM, readerDetection;
-  
+  private ReaderLSL readerBPM, readerDetection;
+  // ref for LSL stream
+  private int playerID;
+
   PShader pixelize, waves, white_noise;
   PGraphics feedbackAmbient, feedbackExplicit, scene;
 
@@ -56,9 +58,8 @@ public class AmbientFeedback  extends PaperScreen {
   // triggers shaky movements at this level and upper
   int noiseShakyLevel = 2;
 
+  // feedback state
   SecondaryMode mode;
-
-  int playerID;
 
   // we need an ID to read from LSL
   public AmbientFeedback(int playerID) {
@@ -178,12 +179,12 @@ public class AmbientFeedback  extends PaperScreen {
   void updateNetwork() {
     double[] dataBPM = readerBPM.read();
     double[] dataDetection = readerDetection.read();
-    
+
     // update something only if we got data
     if (dataBPM != null && dataDetection != null) {
       double idx = dataBPM[0];
       double detection = dataDetection[0];
-      
+
       // temp variable to detect change; not sure I'd used modes...
       String newMode = "clear";
 

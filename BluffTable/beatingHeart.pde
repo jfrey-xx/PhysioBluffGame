@@ -58,8 +58,6 @@ class BeatingHeart {
     checkHistory();
   }
 
-
-
   private void checkHistory() {
     if (rateHistory.size() >= HISTORY_SIZE)
       rateHistory.removeLast();
