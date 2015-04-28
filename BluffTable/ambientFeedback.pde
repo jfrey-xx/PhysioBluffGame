@@ -20,6 +20,10 @@ final int SECOND_EXPLICIT_STOP = 6;
 final int nbModes = 7;
 String[] secondModes = new String[nbModes];
 
+// how long a new mode (ie feedback) should last before switching (in ms)
+// NB: also take into consideration network latency
+final int modeRefractoryPeriod = 1000;
+
 public class AmbientFeedback  extends PaperScreen {
 
   // position for noCamera
@@ -59,7 +63,10 @@ public class AmbientFeedback  extends PaperScreen {
   int noiseShakyLevel = 2;
 
   // feedback state
-  SecondaryMode mode;
+  private SecondaryMode mode;
+  // new mode should stay still for XX seconds
+  private String probingMode = "";
+  private int lastProbingModeChange;
 
   // we need an ID to read from LSL
   public AmbientFeedback(int playerID) {
@@ -134,7 +141,7 @@ public class AmbientFeedback  extends PaperScreen {
     }
 
     // by default show off with nice waves (I wonder who programmed such a nice shader...)
-    mode.set("explicit_STOP");
+    setMode("waves");
   }
 
   void draw() {
@@ -229,9 +236,25 @@ public class AmbientFeedback  extends PaperScreen {
       }
 
       // finally, switch only in new mode
-      if (!mode.is(newMode)) {
-        println("Switching to mode: " + newMode);
-        mode.set(newMode);
+      setMode(newMode);
+    }
+  }
+
+  // use a timer to smooth changes
+  void setMode(String newMode) {
+    int tick = millis();
+
+    // new mode is on parole
+    if (!probingMode.equals(newMode)) {
+      probingMode = newMode;
+      lastProbingModeChange = tick;
+    }
+
+    // new mode should be the same for XX seconds
+    if (!mode.is(probingMode)) {
+      if (lastProbingModeChange + modeRefractoryPeriod < tick) {
+        println("Player " + str(playerID) + " switches to mode: " + probingMode);
+        mode.set(probingMode);
       }
     }
   }
