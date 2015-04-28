@@ -2,6 +2,7 @@ import edu.ucsd.sccn.LSL;
 
 // ease LSL readings
 // NB: will select first playerID found if duplicates
+// NB: since we don't care about synchronization but *do* care about responsiveness, will pull last available sample and discard the others that may be in queue (buffer size == 1)
 public class ReaderLSL {
   private LSL.StreamInlet inlet;
   private double[] sample;
@@ -20,7 +21,8 @@ public class ReaderLSL {
     for (int i = 0; i < results.length; i++) {
       // open an inlet
       println("[" + name + "] Checking stream: " + str(i));
-      LSL.StreamInlet inlet_probe = new LSL.StreamInlet(results[i]);
+      // buffer size set to 1 for responsiveness
+      LSL.StreamInlet inlet_probe = new LSL.StreamInlet(results[i], 1);
       try {
         String probe_name = inlet_probe.info().name();
         int channel_count = inlet_probe.info().channel_count();
@@ -40,20 +42,20 @@ public class ReaderLSL {
     if (inlet == null) {
       println("[" + name + "] Error: no stream found");
     }
-    
-    return;
   }
 
-  // return null if no stream is open
+  // return null if no stream is openned, last value if connection broken
   public double[] read() {
     if (inlet == null)
       return null;
     try {
-      inlet.pull_sample(sample);
+      // non-blocking call, return last value read if connection broken
+      inlet.pull_sample(sample, 0.0);
     }
     catch(Exception e) {
       println("[" + name + "] Error: Can't get sa sample!");
     }
+    //println("sample: " + str((float) sample[0]));
     return sample;
   }
 }
