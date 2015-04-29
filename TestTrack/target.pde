@@ -18,7 +18,7 @@ public class Target  extends PaperScreen {
   void setup() {
     // load A3 marker board
     setDrawingSize(420, 297);
-    loadMarkerBoard(sketchPath + "/data/markers/frame4.png", 420, 297);
+    loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
 
     heart = new BeatingHeart();
     heart.setPosition(0, 0);
@@ -32,37 +32,52 @@ public class Target  extends PaperScreen {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
-    conditionFeedback = 2; /// for tweak mode...
+    if (isBeatingSet) {
+      markerBoard.blockUpdate(cameraTracking, 1000);
+    }
+
+    // for t.weak mode
+    conditionFeedback = 2;
+    heart.setSize(30, 10);
 
     textSize(25);
 
-    beginDraw3D();
+    //rectMode(CENTER);
+    beginDraw2D();
+    background(0);
 
-    // one heart toward others
-    pushMatrix(); 
-    translate(250.0, 150.0, 105.0);
-    pushMatrix(); 
-    rotateX(HALF_PI*-0.5);
-    rotateY(HALF_PI*2.0);
-    if (conditionFeedback >= 1) {
-      heart.drawSelf(currentGraphics);
+    if (testCalibration) {
+      fill(255);
+      rect(0, 0, 420, 297);
     }
-    fill(255);
-    text("ID " + str(playerID), 40, 30);
-    popMatrix();
-    popMatrix();
 
     // one heart toward self
     pushMatrix(); 
-    translate(170.0, 100.0, 105.0);
+    translate(170.0, 180.0, 9.5);
     pushMatrix(); 
-    rotateX(HALF_PI*-1.5);
+    rotateX(HALF_PI*-0.5);
     rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*0.0);
     if (conditionFeedback >= 2) {
       heart.drawSelf(currentGraphics);
     }
     fill(255);
     text("self", 40, 30); 
+    popMatrix();
+    popMatrix();
+
+    // one heart toward others
+    pushMatrix(); 
+    translate(250.0, 110.0, 9.5);
+    pushMatrix(); 
+    rotateX(HALF_PI*0.5);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*2.0);
+    if (conditionFeedback >= 1) {
+      heart.drawSelf(currentGraphics);
+    }
+    fill(255);
+    text("ID " + str(playerID), 40, 30); 
     popMatrix();
     popMatrix();
 

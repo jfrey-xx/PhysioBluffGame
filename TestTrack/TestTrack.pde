@@ -10,29 +10,36 @@ import java.util.logging.Level;
 
 Papart papart;
 
-// Frame location. 
-int framePosX = 1920;
-int framePosY = 0;
-
 Target target;
+
+// toggled by keyboard
+boolean isBeatingSet = false;
+
+// will draw 2D rectangles to on whole paperScreen area
+boolean testCalibration = false;
 
 // for debug, we will print FPS every second
 int lastFPS = 0;
 
 // Undecorated frame 
 public void init() {
-  //frame.removeNotify(); 
-  //frame.setUndecorated(true); 
-  //frame.addNotify(); 
+  // javaCV is kind of verbose by default
+  Logger.getLogger("org.bytedeco.javacv").setLevel(Level.OFF);
+  frame.removeNotify(); 
+  frame.setUndecorated(true); 
+  frame.addNotify(); 
   super.init();
 }
 
 void setup() {
-  // javaCV is kind of verbose by default
-  Logger.getLogger("org.bytedeco.javacv").setLevel(Level.OFF);
   int frameSizeX = 800;
   int frameSizeY = 600;
-  
+
+  if (useProjector) {
+    frameSizeX = 1920;
+    frameSizeY = 1080;
+  }
+
   size(frameSizeX, frameSizeY, OPENGL);
   papart = new Papart(this);
 
@@ -66,9 +73,14 @@ void draw() {
 
 
 void keyPressed() {
-
-  // Placed here, bug if it is placed in setup().
-  if (key == ' ')
-    frame.setLocation(framePosX, framePosY);
+  if (key == ' ') {
+    isBeatingSet = !isBeatingSet;
+    println("set tracking to: " + str(isBeatingSet));
+  }
+  if (key == 'c') {
+    testCalibration = !testCalibration;
+    println("set calibration test to: " + str(testCalibration));
+  }
+  println("hi!");
 }
 
