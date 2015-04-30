@@ -18,7 +18,8 @@ public class Target  extends PaperScreen {
   void setup() {
     // load A3 marker board
     setDrawingSize(420, 297);
-    loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
+    // loadMarkerBoard(sketchPath + "/data/markers/frame4.png", 420, 297);
+    loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
 
     heart = new BeatingHeart();
     heart.setPosition(0, 0);
@@ -42,9 +43,16 @@ public class Target  extends PaperScreen {
 
     textSize(25);
 
+    println("Begin draw ");
     //rectMode(CENTER);
-    beginDraw2D();
+    beginDraw3D();
     background(0);
+
+
+
+    // println("Here ");
+    // this.getLocation().print();
+    // println(this.screen.getPosition()); //.print();
 
     if (testCalibration) {
       fill(255);

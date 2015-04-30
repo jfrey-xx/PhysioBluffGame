@@ -25,6 +25,7 @@ int lastFPS = 0;
 public void init() {
   // javaCV is kind of verbose by default
   Logger.getLogger("org.bytedeco.javacv").setLevel(Level.OFF);
+  Logger.getLogger("org.bytedeco.javacv.ObjectFinder").setLevel(Level.OFF);
   frame.removeNotify(); 
   frame.setUndecorated(true); 
   frame.addNotify(); 
@@ -36,8 +37,8 @@ void setup() {
   int frameSizeY = 600;
 
   if (useProjector) {
-    frameSizeX = 1920;
-    frameSizeY = 1080;
+    frameSizeX = 1280;
+    frameSizeY = 800;
   }
 
   size(frameSizeX, frameSizeY, OPENGL);
@@ -65,10 +66,10 @@ void setup() {
 
 
 void draw() {
-  if (millis() - lastFPS > 1000) {
-    println(millis() + " -- FPS: " + frameRate);
-    lastFPS = millis();
-  }
+  // if (millis() - lastFPS > 1000) {
+  //   println(millis() + " -- FPS: " + frameRate);
+  //   lastFPS = millis();
+  // }
 }
 
 

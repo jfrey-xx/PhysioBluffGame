@@ -87,6 +87,7 @@ class BeatingHeart {
   }
 
   private void drawHeart() {
+      graphics.pushMatrix();
     graphics.pushStyle();
     graphics.imageMode(CENTER);
     graphics.ellipseMode(CENTER);
@@ -105,9 +106,11 @@ class BeatingHeart {
 
     graphics.image(shadow, x, y, defaultSize, defaultSize);
 
+    graphics.translate(0,0,1);
     int heartSize = getHeartSize();
     graphics.image(whiteHeart, x, y, heartSize, heartSize);
     graphics.popStyle();
+      graphics.popMatrix();
   }
 
 
