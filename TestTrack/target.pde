@@ -39,6 +39,8 @@ public class Target  extends PaperScreen {
     heart.setHeartRate((int) (120 + 60 * sinTime));
     //heart.setHeartRate(50);
 
+    heart.setHeartRatio(0.5);
+
     // for t.weak mode
     conditionFeedback = 2;
 
@@ -66,6 +68,7 @@ public class Target  extends PaperScreen {
     rotateZ(HALF_PI*0.0);
     if (conditionFeedback >= 2) {
       heart.update();
+      image(heart.graphics, 0, 0, 320, 240);
     }
     fill(255);
     text("self", 40, 30); 
@@ -76,12 +79,12 @@ public class Target  extends PaperScreen {
     pushMatrix(); 
     translate(250.0, 110.0, 9.5);
     pushMatrix(); 
-    // rotateX(HALF_PI*0.5);
+    rotateX(HALF_PI*0.5);
     rotateY(HALF_PI*0.0);
-    //rotateZ(HALF_PI*2.0);
+    rotateZ(HALF_PI*2.0);
     if (conditionFeedback >= 1) {
       heart.update();
-      image(heart.graphics, 0, 0, 312, 286);
+      image(heart.graphics, 0, 0, 320, 240);
     }
     fill(255);
     text("ID " + str(playerID), 40, 30); 

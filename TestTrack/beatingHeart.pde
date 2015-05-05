@@ -22,8 +22,8 @@ class BeatingHeart {
   private float heartExpansion = 1.2;
 
   private PGraphics graphics;
-  private int texWidth = 800;
-  private int texHeight = 600;
+  private int texWidth;
+  private int texHeight;
   private float heartRatio = 0.5;
 
   PVector position = new PVector();
@@ -32,11 +32,22 @@ class BeatingHeart {
 
   private SecondaryMode mode;
 
-
+  // default texture size: 800x600 pixels
   public BeatingHeart() {
+    this(800, 600);
+  }
+
+  // set custom texture size (in pixels)
+  public BeatingHeart(int texWidth, int texHeight) {
+    this.texWidth = texWidth;
+    this.texHeight = texHeight;
     checkImages();
     initModes();
-    graphics = createGraphics(texWidth, texHeight, P3D);
+    graphics = createGraphics(texWidth, texHeight, P2D);
+  }
+
+  public void setHeartRatio(float heartRatio) {
+    this.heartRatio = heartRatio;
   }
 
   private void checkImages() {
@@ -70,10 +81,6 @@ class BeatingHeart {
 
   // to be called once per draw()
   public void update() {
-    drawSelf();
-  }
-
-  private void drawSelf() {
     if (pulse()) {
       lastPulse = millis();
       findNextPulse();
@@ -82,6 +89,8 @@ class BeatingHeart {
 
     //graphics.fill(255);
     graphics.beginDraw();
+    // reset background
+    background(0, 0, 0, 0);
     drawHeart();
     drawRate();
     graphics.endDraw();
@@ -102,7 +111,7 @@ class BeatingHeart {
     float ellipseSize = heartSpace / 1.5;
 
     // put in first corner
-    graphics.translate(graphics.width / 4, graphics.height / 4);
+    graphics.translate(graphics.width / 4, heartSpace / 2);
 
     // heart at rest inside ellipse
     float heartRest = ellipseSize * 0.75;
@@ -110,9 +119,7 @@ class BeatingHeart {
     graphics.ellipse(0, 0, ellipseSize, ellipseSize);
     graphics.image(shadow, 0, 0, heartRest, heartRest);
 
-    graphics.translate(0, 0, 1);
     float heartSize = getHeartSize() * heartRest;
-    println(str(getHeartSize()));
     graphics.image(whiteHeart, 0, 0, heartSize, heartSize);
     graphics.popStyle();
     graphics.popMatrix();
@@ -136,7 +143,7 @@ class BeatingHeart {
 
     graphics.image(monitor, 0, 0, graphics.width, graphics.height);
 
-    graphics.stroke(255, 200);
+    graphics.stroke(255, 240);
 
     // ...scale the history to maximum space
     graphics.pushMatrix();
@@ -152,8 +159,6 @@ class BeatingHeart {
     graphics.popMatrix();
     graphics.popMatrix();
   }
-
-
 
   void findNextPulse() {
     int timeBetweenHeartBeats = (int) ((60.0f / heartRate) * 1000f); // for ms 
@@ -187,7 +192,6 @@ class BeatingHeart {
 
     return  0.5; // SICK ERRROR
   }
-
 
   void checkMode() {
     int currentTime = millis();
