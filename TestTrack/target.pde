@@ -6,9 +6,7 @@ public class Target  extends PaperScreen {
   // one feedback that'll be dublicated upon drawing
   BeatingHeart heart;
 
-  // position for noCamera
-  int noCameraLocationX = 0;
-  int noCameraLocationY = 0;
+
 
   int playerID = 0;
 
@@ -27,6 +25,13 @@ public class Target  extends PaperScreen {
 
   void draw() {
 
+    float imWidth = 210;
+    float imHeight = 150;
+
+    // position for noCamera
+    int noCameraLocationX = 200;
+    int noCameraLocationY = 150;
+
     if (!cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
@@ -38,56 +43,105 @@ public class Target  extends PaperScreen {
     float sinTime = sin( (float) millis() / 7724.2f * TWO_PI );
     heart.setHeartRate((int) (120 + 60 * sinTime));
     //heart.setHeartRate(50);
-
     heart.setHeartRatio(0.5);
+    heart.update();
 
     // for t.weak mode
     conditionFeedback = 2;
 
     textSize(25);
+    //imageMode(CENTER);
 
     //rectMode(CENTER);
     beginDraw3D();
     background(0);
 
-    //println("Here ");
-    //this.getLocation().print();
-    //this.screen.getPosition().print();
-
     if (testCalibration) {
       fill(255);
       rect(0, 0, 420, 297);
     }
+    
+    // TODO: positionning of one feedback and the other could be way simpler rotating around paperscreen center
 
-    // one heart toward self
-    pushMatrix(); 
-    translate(105.0, 150.0, 110.0);
-    pushMatrix(); 
+    /** View self **/
+
+    // center, set border, lift plane
+    pushMatrix();
+    translate(imWidth/2, (297 - imWidth) / 2, 0.0); // imWidth == imHeight * sqrt(2), ie square base
     rotateX(HALF_PI*0.5);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*0.0);
+
+    // mirror / flip
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    rotateX(HALF_PI*0.0);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*2.0);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    if (testCalibration) {
+      pushStyle();
+      fill(128);
+      rect( 0, 0, imWidth, imHeight);
+      popStyle();
+    }
+
+    // some margin for junction
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    scale(0.8);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    // finally, the image
+    if (conditionFeedback >= 2) {
+      image(heart.graphics, 0, 0, imWidth, imHeight);
+    }
+    fill(255);
+    text("self", 105, 50); 
+
+    popMatrix();
+    popMatrix();
+    popMatrix();
+
+    /** View from others **/
+
+    // center, set border, lift plane
+    pushMatrix();
+    translate(imWidth/2, 297 - (297 - imWidth) / 2, 0.0);
+    rotateX(HALF_PI*-2.5);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*0.0);
+
+    // mirror / flip
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    rotateX(HALF_PI*0.0);
     rotateY(HALF_PI*2.0);
     rotateZ(HALF_PI*2.0);
-    if (conditionFeedback >= 2) {
-      heart.update();
-      image(heart.graphics, 0, 0, 210, 150);
-    }
-    fill(255);
-    text("self", 40, 30); 
-    popMatrix();
-    popMatrix();
+    translate(-imWidth/2, -imHeight/2, 0.0);
 
-    // one heart toward others
-    pushMatrix(); 
-    translate(315.0, 150.0, 0.0);
-    pushMatrix(); 
-    rotateX(HALF_PI*-0.5);
-    rotateY(HALF_PI*2.0);
-    rotateZ(HALF_PI*0.0);
+    if (testCalibration) {
+      pushStyle();
+      fill(128);
+      rect( 0, 0, imWidth, imHeight);
+      popStyle();
+    }
+
+    // some margin for junction
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    scale(0.8);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    // finally, the image
     if (conditionFeedback >= 1) {
-      heart.update();
-      image(heart.graphics, 0, 0, 210, 150);
+      image(heart.graphics, 0, 0, imWidth, imHeight);
     }
     fill(255);
-    text("ID " + str(playerID), 40, 30); 
+    text("ID " + str(playerID), 105, 50); 
+
+    popMatrix();
     popMatrix();
     popMatrix();
 
