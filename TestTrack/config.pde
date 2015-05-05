@@ -1,6 +1,6 @@
-final boolean noCameraMode = false;
+final boolean cameraMode = true;
 
 // webcam that will monitor markers
-final int camNumber = 1;
+final int camNumber = 0;
 
-boolean useProjector = true;
+final boolean useProjector = true;

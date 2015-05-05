@@ -18,8 +18,8 @@ public class Target  extends PaperScreen {
   void setup() {
     // load A3 marker board
     setDrawingSize(420, 297);
-    // loadMarkerBoard(sketchPath + "/data/markers/frame4.png", 420, 297);
-    loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
+    loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
+    //loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
 
     heart = new BeatingHeart();
     heart.setHeartRate(70);
@@ -27,7 +27,7 @@ public class Target  extends PaperScreen {
 
   void draw() {
 
-    if (noCameraMode) {
+    if (cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
@@ -61,14 +61,14 @@ public class Target  extends PaperScreen {
 
     // one heart toward self
     pushMatrix(); 
-    translate(170.0, 180.0, 9.5);
+    translate(105.0, 150.0, 110.0);
     pushMatrix(); 
-    rotateX(HALF_PI*-0.5);
-    rotateY(HALF_PI*0.0);
-    rotateZ(HALF_PI*0.0);
+    rotateX(HALF_PI*0.5);
+    rotateY(HALF_PI*2.0);
+    rotateZ(HALF_PI*2.0);
     if (conditionFeedback >= 2) {
       heart.update();
-      image(heart.graphics, 0, 0, 320, 240);
+      image(heart.graphics, 0, 0, 210, 150);
     }
     fill(255);
     text("self", 40, 30); 
@@ -77,14 +77,14 @@ public class Target  extends PaperScreen {
 
     // one heart toward others
     pushMatrix(); 
-    translate(250.0, 110.0, 9.5);
+    translate(315.0, 150.0, 0.0);
     pushMatrix(); 
-    rotateX(HALF_PI*0.5);
-    rotateY(HALF_PI*0.0);
-    rotateZ(HALF_PI*2.0);
+    rotateX(HALF_PI*-0.5);
+    rotateY(HALF_PI*2.0);
+    rotateZ(HALF_PI*0.0);
     if (conditionFeedback >= 1) {
       heart.update();
-      image(heart.graphics, 0, 0, 320, 240);
+      image(heart.graphics, 0, 0, 210, 150);
     }
     fill(255);
     text("ID " + str(playerID), 40, 30); 

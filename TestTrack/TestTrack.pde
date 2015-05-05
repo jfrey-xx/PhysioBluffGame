@@ -37,14 +37,14 @@ void setup() {
   int frameSizeY = 600;
 
   if (useProjector) {
-    frameSizeX = 1280;
-    frameSizeY = 800;
+    frameSizeX = 1920;
+    frameSizeY = 1200;
   }
 
   size(frameSizeX, frameSizeY, OPENGL);
   papart = new Papart(this);
 
-  if (noCameraMode) {
+  if (!cameraMode) {
     papart.initNoCamera(1);
   } else {
     if (useProjector) {
@@ -59,7 +59,7 @@ void setup() {
 
   target = new Target();
 
-  if (!noCameraMode)
+  if (cameraMode)
     papart.startTracking();
 }
 
