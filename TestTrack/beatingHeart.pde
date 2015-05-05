@@ -38,7 +38,7 @@ class BeatingHeart {
     if (shadow == null || whiteHeart == null) {
       whiteHeart = loadImage("heart.png");
       shadow = loadImage("shadow.png");
-      monitor = loadImage("monitor1.png");
+      monitor = loadImage("monitor.png");
     }
   }
 
@@ -87,7 +87,7 @@ class BeatingHeart {
   }
 
   private void drawHeart() {
-      graphics.pushMatrix();
+    graphics.pushMatrix();
     graphics.pushStyle();
     graphics.imageMode(CENTER);
     graphics.ellipseMode(CENTER);
@@ -106,11 +106,11 @@ class BeatingHeart {
 
     graphics.image(shadow, x, y, defaultSize, defaultSize);
 
-    graphics.translate(0,0,1);
+    graphics.translate(0, 0, 1);
     int heartSize = getHeartSize();
     graphics.image(whiteHeart, x, y, heartSize, heartSize);
     graphics.popStyle();
-      graphics.popMatrix();
+    graphics.popMatrix();
   }
 
 
@@ -122,7 +122,7 @@ class BeatingHeart {
 
     graphics.pushMatrix();
 
-    graphics.translate(position.x, position.y);
+    graphics.translate(position.x, position.y, 1);
 
     // Get down by 100, top of the table
     graphics.translate(-defaultSize, defaultSize * 1.3f);
@@ -131,14 +131,12 @@ class BeatingHeart {
 
     graphics.noFill();
     graphics.stroke(128);
-    graphics.strokeWeight(2);
+    graphics.strokeWeight(1);
     //  graphics.rect(0, 0, HISTORY_SIZE,  MAX_RATE - MIN_RATE);
     graphics.image(monitor, 0, 0, HISTORY_SIZE, MAX_RATE - MIN_RATE);
 
     // get to the bottom. 
-
-    //  graphics.fill(255, 100);
-    graphics.stroke(255, 66);
+    graphics.stroke(255, 200);
 
     int xPos = HISTORY_SIZE;
     for (int rate : rateHistory) {
