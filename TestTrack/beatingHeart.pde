@@ -19,19 +19,24 @@ class BeatingHeart {
   int nextPulse = 0;
 
   // Graphics, default values
-  int defaultSize = 100;
-  int expansion = 30;
+  private float heartExpansion = 1.2;
+
+  private PGraphics graphics;
+  private int texWidth = 800;
+  private int texHeight = 600;
+  private float heartRatio = 0.5;
 
   PVector position = new PVector();
 
   LinkedList<Integer> rateHistory = new LinkedList<Integer>();
 
   private SecondaryMode mode;
-  private PGraphics graphics;
+
 
   public BeatingHeart() {
     checkImages();
     initModes();
+    graphics = createGraphics(texWidth, texHeight, P3D);
   }
 
   private void checkImages() {
@@ -63,27 +68,23 @@ class BeatingHeart {
       rateHistory.removeLast();
   }
 
-  public void setPosition(int x, int y) {
-    this.position.x = x;
-    this.position.y = y;
+  // to be called once per draw()
+  public void update() {
+    drawSelf();
   }
 
-  public void setSize(int size, int expansion) {
-    this.defaultSize = size;
-    this.expansion = expansion;
-  }
-
-
-  public void drawSelf(PGraphics graphics) {
-    this.graphics = graphics;
+  private void drawSelf() {
     if (pulse()) {
       lastPulse = millis();
       findNextPulse();
       mode.set("beatUp");
     }
 
+    //graphics.fill(255);
+    graphics.beginDraw();
     drawHeart();
     drawRate();
+    graphics.endDraw();
   }
 
   private void drawHeart() {
@@ -96,19 +97,23 @@ class BeatingHeart {
     graphics.strokeWeight(3);
     graphics.stroke(183, 83, 83);
 
-    int x = (int) position.x;
-    int y = (int) position.y;
+    // heart will not take all space left
+    float heartSpace = graphics.height * heartRatio;
+    float ellipseSize = heartSpace / 1.5;
 
-    int trX = -1;
-    int trY = -5;
-    float scale = 2.0;
-    graphics.ellipse(x + trX, y + trY, defaultSize * scale, defaultSize * scale);
+    // put in first corner
+    graphics.translate(graphics.width / 4, graphics.height / 4);
 
-    graphics.image(shadow, x, y, defaultSize, defaultSize);
+    // heart at rest inside ellipse
+    float heartRest = ellipseSize * 0.75;
+
+    graphics.ellipse(0, 0, ellipseSize, ellipseSize);
+    graphics.image(shadow, 0, 0, heartRest, heartRest);
 
     graphics.translate(0, 0, 1);
-    int heartSize = getHeartSize();
-    graphics.image(whiteHeart, x, y, heartSize, heartSize);
+    float heartSize = getHeartSize() * heartRest;
+    println(str(getHeartSize()));
+    graphics.image(whiteHeart, 0, 0, heartSize, heartSize);
     graphics.popStyle();
     graphics.popMatrix();
   }
@@ -120,31 +125,31 @@ class BeatingHeart {
 
   private void drawRate() {
 
+    // draw rate in its dedicated space, under heart
     graphics.pushMatrix();
-
-    graphics.translate(position.x, position.y, 1);
-
-    // Get down by 100, top of the table
-    graphics.translate(-defaultSize, defaultSize * 1.3f);
-
-    graphics.scale(0.36);
+    graphics.translate(0, graphics.height * heartRatio);
+    graphics.scale(1, 1 - heartRatio);
 
     graphics.noFill();
     graphics.stroke(128);
     graphics.strokeWeight(1);
-    //  graphics.rect(0, 0, HISTORY_SIZE,  MAX_RATE - MIN_RATE);
-    graphics.image(monitor, 0, 0, HISTORY_SIZE, MAX_RATE - MIN_RATE);
 
-    // get to the bottom. 
+    graphics.image(monitor, 0, 0, graphics.width, graphics.height);
+
     graphics.stroke(255, 200);
+
+    // ...scale the history to maximum space
+    graphics.pushMatrix();
+    graphics.scale(((float) graphics.width)/HISTORY_SIZE, ((float) graphics.height)/(MAX_RATE - MIN_RATE));
 
     int xPos = HISTORY_SIZE;
     for (int rate : rateHistory) {
-      int rateSize = rate - MIN_RATE;
+      int rateSize = rate - MIN_RATE; // clamp bottom
       graphics.line(xPos, MAX_RATE - MIN_RATE, xPos, MAX_RATE - MIN_RATE - rateSize);
       xPos--;
     }
 
+    graphics.popMatrix();
     graphics.popMatrix();
   }
 
@@ -159,27 +164,28 @@ class BeatingHeart {
     return millis() >= nextPulse;
   }
 
-  int getHeartSize() {
+  // return ratio of heart size (1 at rest, up to heartExpansion)
+  float getHeartSize() {
 
     checkMode();
 
     if (mode.is("rest"))
-      return defaultSize;
+      return 1.0;
 
 
     if (mode.is("beatUp")) {
-      return (int) map(millis(), 
+      return map(millis(), 
       lastPulse, lastPulse + pulseDurationUp, 
-      defaultSize, defaultSize + expansion);
+      1.0, heartExpansion);
     }
 
     if (mode.is("beatDown")) {
-      return (int) map(millis(), 
+      return map(millis(), 
       lastPulse + pulseDurationUp, lastPulse + pulseDurationUp + pulseDurationDown, 
-      defaultSize + expansion, defaultSize);
+      heartExpansion, 1.0);
     }
 
-    return defaultSize - 50; // SICK ERRROR
+    return  0.5; // SICK ERRROR
   }
 
 

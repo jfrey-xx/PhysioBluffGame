@@ -22,9 +22,7 @@ public class Target  extends PaperScreen {
     loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
 
     heart = new BeatingHeart();
-    heart.setPosition(0, 0);
     heart.setHeartRate(70);
-    heart.setSize(30, 10);
   }
 
   void draw() {
@@ -37,22 +35,22 @@ public class Target  extends PaperScreen {
       markerBoard.blockUpdate(cameraTracking, 1000);
     }
 
+    float sinTime = sin( (float) millis() / 7724.2f * TWO_PI );
+    heart.setHeartRate((int) (120 + 60 * sinTime));
+    //heart.setHeartRate(50);
+
     // for t.weak mode
     conditionFeedback = 2;
-    heart.setSize(30, 10);
 
     textSize(25);
 
-    println("Begin draw ");
     //rectMode(CENTER);
     beginDraw3D();
     background(0);
 
-
-
-    // println("Here ");
-    // this.getLocation().print();
-    // println(this.screen.getPosition()); //.print();
+    //println("Here ");
+    //this.getLocation().print();
+    //println(this.screen.getPosition()); //.print();
 
     if (testCalibration) {
       fill(255);
@@ -67,7 +65,7 @@ public class Target  extends PaperScreen {
     rotateY(HALF_PI*0.0);
     rotateZ(HALF_PI*0.0);
     if (conditionFeedback >= 2) {
-      heart.drawSelf(currentGraphics);
+      heart.update();
     }
     fill(255);
     text("self", 40, 30); 
@@ -78,11 +76,12 @@ public class Target  extends PaperScreen {
     pushMatrix(); 
     translate(250.0, 110.0, 9.5);
     pushMatrix(); 
-    rotateX(HALF_PI*0.5);
+    // rotateX(HALF_PI*0.5);
     rotateY(HALF_PI*0.0);
-    rotateZ(HALF_PI*2.0);
+    //rotateZ(HALF_PI*2.0);
     if (conditionFeedback >= 1) {
-      heart.drawSelf(currentGraphics);
+      heart.update();
+      image(heart.graphics, 0, 0, 312, 286);
     }
     fill(255);
     text("ID " + str(playerID), 40, 30); 
