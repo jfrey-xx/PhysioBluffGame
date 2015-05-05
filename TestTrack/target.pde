@@ -27,7 +27,7 @@ public class Target  extends PaperScreen {
 
   void draw() {
 
-    if (cameraMode) {
+    if (!cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
@@ -52,7 +52,7 @@ public class Target  extends PaperScreen {
 
     //println("Here ");
     //this.getLocation().print();
-    //println(this.screen.getPosition()); //.print();
+    //this.screen.getPosition().print();
 
     if (testCalibration) {
       fill(255);
@@ -92,6 +92,18 @@ public class Target  extends PaperScreen {
     popMatrix();
 
     endDraw();
+  }
+
+  // position... location... I don't know
+  public PMatrix3D getPosition() {
+    // same as this.screen.getPosition() ??;
+    return getLocation();
+  }
+
+  public void setPosition(PMatrix3D mat) {
+    //this.screen.setPos(mat);
+    //screen.setTransformation(mat);
+    setProjection(mat);
   }
 }
 

@@ -82,6 +82,31 @@ void keyPressed() {
     testCalibration = !testCalibration;
     println("set calibration test to: " + str(testCalibration));
   }
-  println("hi!");
+
+  // save target
+  if (key == 's') {
+    String filename = sketchPath + "data/target_position.xml";
+    println("Saving target matrix to: " + filename);
+    PMatrix3D savMat =  target.getPosition();
+    savMat.print();
+    Utils.savePMatrix3D(this, savMat, filename);
+  }
+
+  // load target
+  if (key == 'l') {
+    String filename = sketchPath + "data/target_position.xml";
+    println("Loading target matrix from: " + filename);
+    PMatrix3D savMat = null;
+    try {
+      savMat = Utils.loadPMatrix3D(this, filename);
+    }
+    catch (Exception e) {
+      println("Abort: file not found");
+    }
+    if (savMat != null) {
+      savMat.print();
+      target.setPosition(savMat);
+    }
+  }
 }
 
