@@ -188,8 +188,8 @@ public class AmbientFeedback  extends PaperScreen {
     double[] dataDetection = readerDetection.read();
 
     // update something only if we got data
-    if (dataBPM != null && dataDetection != null) {
-      double idx = dataBPM[0];
+    if (dataBPM != null && dataBPM.length > 1 && dataDetection != null) {
+      double idx = dataBPM[1];
       double detection = dataDetection[0];
 
       // temp variable to detect change; not sure I'd used modes...

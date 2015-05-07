@@ -64,8 +64,8 @@ public class HeartFeedback  extends PaperScreen {
   // read data from LSL, update internal state
   private void updateNetwork() {
     double[] dataBPM = readerBPM.read();
-    if (dataBPM != null && dataBPM.length > 1) {
-      double bpm = dataBPM[1];
+    if (dataBPM != null) {
+      double bpm = dataBPM[0];
       heart.setHeartRate((int) bpm);
     }
   }
