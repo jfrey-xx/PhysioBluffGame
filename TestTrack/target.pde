@@ -76,7 +76,7 @@ public class Target  extends PaperScreen {
     pushMatrix();
     translate(imWidth/2, imHeight/2, 0.0);
     rotateX(HALF_PI*0.0);
-    rotateY(HALF_PI*0.0);
+    rotateY(HALF_PI*2.0);
     rotateZ(HALF_PI*2.0);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
@@ -117,7 +117,7 @@ public class Target  extends PaperScreen {
     pushMatrix();
     translate(imWidth/2, imHeight/2, 0.0);
     rotateX(HALF_PI*0.0);
-    rotateY(HALF_PI*2.0);
+    rotateY(HALF_PI*0.0);
     rotateZ(HALF_PI*2.0);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
