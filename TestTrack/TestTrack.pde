@@ -100,6 +100,7 @@ void keyPressed() {
   // load target
   if (key == 'l') {
     target.loadLocation();
+    isBeatingSet = true; // sync state with parpart's internal
   }
 }
 

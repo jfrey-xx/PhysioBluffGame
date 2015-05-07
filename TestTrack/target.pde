@@ -29,8 +29,6 @@ public class Target  extends PaperScreen {
   }
 
   void draw() {
-    // bugfig for shacky tracking using surf
-    setLocation(0, 0, 0);
 
     float imWidth = 210;
     float imHeight = 150;
@@ -42,11 +40,9 @@ public class Target  extends PaperScreen {
     if (!cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     } else {
-      if (isBeatingSet) {
-        markerBoard.blockUpdate(cameraTracking, 1000);
-      }
+      useManualLocation(isBeatingSet);
     }
-    
+
     // only read data from network (and update accordingly mode) if option set, otherwise use a sin
     if (feedbackFromNetwork) {
       updateNetwork();

@@ -1,4 +1,4 @@
-final boolean cameraMode = false;
+final boolean cameraMode = true;
 
 // webcam that will monitor markers
 final int camNumber = 0;
