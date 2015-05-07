@@ -45,7 +45,14 @@ void setup() {
   papart = new Papart(this);
 
   if (!cameraMode) {
-    papart.initNoCamera(1);
+    ProjectorDisplay projector;
+    projector = new ProjectorDisplay(this, Papart.proCamCalib);
+    projector.setZNearFar(10, 6000);
+    projector.setQuality(1);
+    projector.init();
+
+    papart.setDisplay(projector);
+    papart.setNoTrackingCamera();
   } else {
     if (useProjector) {
       papart.initProjectorCamera(str(camNumber), Camera.Type.OPENCV);
@@ -75,8 +82,10 @@ void draw() {
 
 void keyPressed() {
   if (key == ' ') {
-    isBeatingSet = !isBeatingSet;
-    println("set tracking to: " + str(isBeatingSet));
+    if (cameraMode) {
+      isBeatingSet = !isBeatingSet;
+      println("set tracking to: " + str(isBeatingSet));
+    }
   }
   if (key == 'c') {
     testCalibration = !testCalibration;
@@ -85,28 +94,12 @@ void keyPressed() {
 
   // save target
   if (key == 's') {
-    String filename = sketchPath + "data/target_position.xml";
-    println("Saving target matrix to: " + filename);
-    PMatrix3D savMat =  target.getPosition();
-    savMat.print();
-    Utils.savePMatrix3D(this, savMat, filename);
+    target.saveLocation();
   }
 
   // load target
   if (key == 'l') {
-    String filename = sketchPath + "data/target_position.xml";
-    println("Loading target matrix from: " + filename);
-    PMatrix3D savMat = null;
-    try {
-      savMat = Utils.loadPMatrix3D(this, filename);
-    }
-    catch (Exception e) {
-      println("Abort: file not found");
-    }
-    if (savMat != null) {
-      savMat.print();
-      target.setPosition(savMat);
-    }
+    target.loadLocation();
   }
 }
 

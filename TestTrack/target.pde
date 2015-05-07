@@ -29,23 +29,24 @@ public class Target  extends PaperScreen {
   }
 
   void draw() {
+    // bugfig for shacky tracking using surf
+    setLocation(0, 0, 0);
 
     float imWidth = 210;
     float imHeight = 150;
 
     // position for noCamera
-    int noCameraLocationX = 200;
-    int noCameraLocationY = 150;
+    int noCameraLocationX = 0;
+    int noCameraLocationY = 0;
 
     if (!cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
+    } else {
+      if (isBeatingSet) {
+        markerBoard.blockUpdate(cameraTracking, 1000);
+      }
     }
-
-    if (isBeatingSet) {
-      markerBoard.blockUpdate(cameraTracking, 1000);
-    }
-
-
+    
     // only read data from network (and update accordingly mode) if option set, otherwise use a sin
     if (feedbackFromNetwork) {
       updateNetwork();
@@ -53,6 +54,7 @@ public class Target  extends PaperScreen {
       float sinTime = sin( (float) millis() / 7724.2f * TWO_PI / (1 + playerID));
       heart.setHeartRate((int) (120 + 60 * sinTime));
     }
+
     heart.setHeartRatio(0.5);
     heart.update();
 
@@ -158,19 +160,20 @@ public class Target  extends PaperScreen {
     endDraw();
   }
 
-  // position... location... I don't know
-  public PMatrix3D getPosition() {
-    // same as this.screen.getPosition() ??;
-    return getLocation();
+
+  public void saveLocation() {
+    String filename = "target_" + str(playerID) + "_position.xml";
+    println("Saving location to: " + filename);
+    saveLocationTo(filename);
   }
 
-  public void setPosition(PMatrix3D mat) {
-    //this.screen.setPos(mat);
-    //screen.setTransformation(mat);
-    setProjection(mat);
+  public void loadLocation() {
+    String filename = "target_" + str(playerID) + "_position.xml";
+    println("Loading location from: " + filename);
+    loadLocationFrom(filename);
   }
-  
-    // try to resolve LSL streams
+
+  // try to resolve LSL streams
   private void initNetwork() {
     readerBPM = new ReaderLSL(LSLBPMStream, playerID);
   }
