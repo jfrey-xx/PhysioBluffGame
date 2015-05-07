@@ -75,8 +75,9 @@ public class AmbientFeedback  extends PaperScreen {
 
   void setup() {
     setDrawingSize(ambientWidth, ambientHeight);
-    loadMarkerBoard(sketchPath + "/data/A3-small1.cfg", ambientWidth, ambientHeight);
-
+    //loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
+    loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
+    
     initShaders();
     initModes();
     if (feedbackFromNetwork) {
@@ -157,7 +158,7 @@ public class AmbientFeedback  extends PaperScreen {
     }
 
     // one position for dummy teegi
-    if (noCameraMode) {
+    if (!cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
@@ -197,8 +198,8 @@ public class AmbientFeedback  extends PaperScreen {
 
       // now define new mode (and clamp condition, just in case)
       // NB: very tempting to use switch in there :D
-      if (condition <= 0) {
-        condition = -1;
+      if (conditionAmbient <= 0) {
+        conditionAmbient = -1;
         newMode = "clear";
       } else {
         // current stae of noise
@@ -210,7 +211,7 @@ public class AmbientFeedback  extends PaperScreen {
           noiseLevel = 1;
         }
         // would be *really* simpler without modes
-        if (condition == 1) {
+        if (conditionAmbient == 1) {
 
           if (noiseLevel == 0) {
             newMode = "waves";
@@ -221,8 +222,8 @@ public class AmbientFeedback  extends PaperScreen {
           if (noiseLevel == 2) {
             newMode = "noise";
           }
-        } else if (condition >= 2) {
-          condition = 2;
+        } else if (conditionAmbient >= 2) {
+          conditionAmbient = 2;
           if (noiseLevel == 0) {
             newMode = "explicit_OK";
           }

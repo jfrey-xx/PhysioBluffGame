@@ -3,6 +3,7 @@ import processing.net.*;
 
 public class HeartFeedback  extends PaperScreen {
 
+  // one feedback that'll be duplicated upon drawing
   BeatingHeart heart;
 
   // position for noCamera
@@ -21,26 +22,28 @@ public class HeartFeedback  extends PaperScreen {
   }
 
   void setup() {
-    setDrawingSize(297, 210);
-    loadMarkerBoard(sketchPath + "/data/patient.cfg", 297, 210);
+    // load A3 marker board
+    setDrawingSize(420, 297);
+    loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
+    //loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
 
     heart = new BeatingHeart();
-
-    heart.setPosition(50, 50);
     heart.setHeartRate(70);
-    heart.setSize(30, 10);
 
     if (feedbackFromNetwork) {
       initNetwork();
     }
+
+    useManualLocation(false);
   }
 
   void draw() {
+    float imWidth = 210;
+    float imHeight = 150;
 
-    if (noCameraMode) {
-      setLocation(noCameraLocationX, noCameraLocationY, 0 );
-    }
-
+    // on startup lock position, even with wecam, so we could share peacefully the same board between PaperScreen
+    setLocation(noCameraLocationX, noCameraLocationY, 0 );
+    
     // only read data from network (and update accordingly mode) if option set, otherwise use a sin
     if (feedbackFromNetwork) {
       updateNetwork();
@@ -49,11 +52,118 @@ public class HeartFeedback  extends PaperScreen {
       heart.setHeartRate((int) (120 + 60 * sinTime));
     }
 
-    beginDraw2D();
+    heart.setHeartRatio(0.5);
+    heart.update();
 
-    heart.drawSelf(currentGraphics);
+    textSize(25);
+
+    beginDraw3D();
+    background(0);
+
+    if (checkCalibration) {
+      fill(255);
+      rect(0, 0, 420, 297);
+    }
+
+    // TODO: positionning of one feedback and the other could be way simpler rotating around paperscreen center
+
+    /** View self **/
+
+    // center, set border, lift plane
+    pushMatrix();
+    translate(imWidth/2, (297 - imWidth) / 2, 0.0); // imWidth == imHeight * sqrt(2), ie square base
+    rotateX(HALF_PI*0.5);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*0.0);
+
+    // mirror / flip
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    rotateX(HALF_PI*0.0);
+    rotateY(HALF_PI*2.0);
+    rotateZ(HALF_PI*2.0);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    if (checkCalibration) {
+      pushStyle();
+      fill(128);
+      rect( 0, 0, imWidth, imHeight);
+      popStyle();
+    }
+
+    // some margin for junction
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    scale(0.8);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    // finally, the image
+    if (conditionHR >= 2) {
+      image(heart.graphics, 0, 0, imWidth, imHeight);
+    }
+    fill(255);
+    text("self", 105, 50); 
+
+    popMatrix();
+    popMatrix();
+    popMatrix();
+
+    /** View from others **/
+
+    // center, set border, lift plane
+    pushMatrix();
+    translate(imWidth/2, 297 - (297 - imWidth) / 2, 0.0);
+    rotateX(HALF_PI*-2.5);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*0.0);
+
+    // mirror / flip
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    rotateX(HALF_PI*0.0);
+    rotateY(HALF_PI*0.0);
+    rotateZ(HALF_PI*2.0);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    if (checkCalibration) {
+      pushStyle();
+      fill(128);
+      rect( 0, 0, imWidth, imHeight);
+      popStyle();
+    }
+
+    // some margin for junction
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    scale(0.8);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    // finally, the image
+    if (conditionHR >= 1) {
+      image(heart.graphics, 0, 0, imWidth, imHeight);
+    }
+    fill(255);
+    text("ID " + str(playerID), 105, 50); 
+
+    popMatrix();
+    popMatrix();
+    popMatrix();
 
     endDraw();
+  }
+
+  public void saveLocation() {
+    String filename = "data/target_" + str(playerID) + "_position.xml";
+    println("Saving location to: " + filename);
+    saveLocationTo(filename);
+  }
+
+  public void loadLocation() {
+    // reset any manual location before applying a previous state
+    setLocation(0, 0, 0 );
+    String filename = "data/target_" + str(playerID) + "_position.xml";
+    println("Loading location from: " + filename);
+    loadLocationFrom(filename);
   }
 
   // try to resolve LSL streams

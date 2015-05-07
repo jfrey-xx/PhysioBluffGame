@@ -19,26 +19,42 @@ class BeatingHeart {
   int nextPulse = 0;
 
   // Graphics, default values
-  int defaultSize = 100;
-  int expansion = 30;
+  private float heartExpansion = 1.2;
+
+  private PGraphics graphics;
+  private int texWidth;
+  private int texHeight;
+  private float heartRatio = 0.5;
 
   PVector position = new PVector();
 
   LinkedList<Integer> rateHistory = new LinkedList<Integer>();
 
   private SecondaryMode mode;
-  private PGraphics graphics;
 
+  // default texture size: 800x600 pixels
   public BeatingHeart() {
+    this(800, 600);
+  }
+
+  // set custom texture size (in pixels)
+  public BeatingHeart(int texWidth, int texHeight) {
+    this.texWidth = texWidth;
+    this.texHeight = texHeight;
     checkImages();
     initModes();
+    graphics = createGraphics(texWidth, texHeight, P2D);
+  }
+
+  public void setHeartRatio(float heartRatio) {
+    this.heartRatio = heartRatio;
   }
 
   private void checkImages() {
     if (shadow == null || whiteHeart == null) {
       whiteHeart = loadImage("heart.png");
       shadow = loadImage("shadow.png");
-      monitor = loadImage("monitor1.png");
+      monitor = loadImage("monitor.png");
     }
   }
 
@@ -63,30 +79,25 @@ class BeatingHeart {
       rateHistory.removeLast();
   }
 
-  public void setPosition(int x, int y) {
-    this.position.x = x;
-    this.position.y = y;
-  }
-
-  public void setSize(int size, int expansion) {
-    this.defaultSize = size;
-    this.expansion = expansion;
-  }
-
-
-  public void drawSelf(PGraphics graphics) {
-    this.graphics = graphics;
+  // to be called once per draw()
+  public void update() {
     if (pulse()) {
       lastPulse = millis();
       findNextPulse();
       mode.set("beatUp");
     }
 
+    //graphics.fill(255);
+    graphics.beginDraw();
+    // reset background
+    background(0, 0, 0, 0);
     drawHeart();
     drawRate();
+    graphics.endDraw();
   }
 
   private void drawHeart() {
+    graphics.pushMatrix();
     graphics.pushStyle();
     graphics.imageMode(CENTER);
     graphics.ellipseMode(CENTER);
@@ -95,19 +106,23 @@ class BeatingHeart {
     graphics.strokeWeight(3);
     graphics.stroke(183, 83, 83);
 
-    int x = (int) position.x;
-    int y = (int) position.y;
+    // heart will not take all space left
+    float heartSpace = graphics.height * heartRatio;
+    float ellipseSize = heartSpace / 1.5;
 
-    int trX = -1;
-    int trY = -5;
-    float scale = 2.0;
-    graphics.ellipse(x + trX, y + trY, defaultSize * scale, defaultSize * scale);
+    // put in first corner
+    graphics.translate(graphics.width / 4, heartSpace / 2);
 
-    graphics.image(shadow, x, y, defaultSize, defaultSize);
+    // heart at rest inside ellipse
+    float heartRest = ellipseSize * 0.75;
 
-    int heartSize = getHeartSize();
-    graphics.image(whiteHeart, x, y, heartSize, heartSize);
+    graphics.ellipse(0, 0, ellipseSize, ellipseSize);
+    graphics.image(shadow, 0, 0, heartRest, heartRest);
+
+    float heartSize = getHeartSize() * heartRest;
+    graphics.image(whiteHeart, 0, 0, heartSize, heartSize);
     graphics.popStyle();
+    graphics.popMatrix();
   }
 
 
@@ -117,37 +132,33 @@ class BeatingHeart {
 
   private void drawRate() {
 
+    // draw rate in its dedicated space, under heart
     graphics.pushMatrix();
-
-    graphics.translate(position.x, position.y);
-
-    // Get down by 100, top of the table
-    graphics.translate(-defaultSize, defaultSize * 1.3f);
-
-    graphics.scale(0.36);
+    graphics.translate(0, graphics.height * heartRatio);
+    graphics.scale(1, 1 - heartRatio);
 
     graphics.noFill();
     graphics.stroke(128);
-    graphics.strokeWeight(2);
-    //  graphics.rect(0, 0, HISTORY_SIZE,  MAX_RATE - MIN_RATE);
-    graphics.image(monitor, 0, 0, HISTORY_SIZE, MAX_RATE - MIN_RATE);
+    graphics.strokeWeight(1);
 
-    // get to the bottom. 
+    graphics.image(monitor, 0, 0, graphics.width, graphics.height);
 
-    //  graphics.fill(255, 100);
-    graphics.stroke(255, 66);
+    graphics.stroke(255, 240);
+
+    // ...scale the history to maximum space
+    graphics.pushMatrix();
+    graphics.scale(((float) graphics.width)/HISTORY_SIZE, ((float) graphics.height)/(MAX_RATE - MIN_RATE));
 
     int xPos = HISTORY_SIZE;
     for (int rate : rateHistory) {
-      int rateSize = rate - MIN_RATE;
+      int rateSize = rate - MIN_RATE; // clamp bottom
       graphics.line(xPos, MAX_RATE - MIN_RATE, xPos, MAX_RATE - MIN_RATE - rateSize);
       xPos--;
     }
 
     graphics.popMatrix();
+    graphics.popMatrix();
   }
-
-
 
   void findNextPulse() {
     int timeBetweenHeartBeats = (int) ((60.0f / heartRate) * 1000f); // for ms 
@@ -158,29 +169,29 @@ class BeatingHeart {
     return millis() >= nextPulse;
   }
 
-  int getHeartSize() {
+  // return ratio of heart size (1 at rest, up to heartExpansion)
+  float getHeartSize() {
 
     checkMode();
 
     if (mode.is("rest"))
-      return defaultSize;
+      return 1.0;
 
 
     if (mode.is("beatUp")) {
-      return (int) map(millis(), 
+      return map(millis(), 
       lastPulse, lastPulse + pulseDurationUp, 
-      defaultSize, defaultSize + expansion);
+      1.0, heartExpansion);
     }
 
     if (mode.is("beatDown")) {
-      return (int) map(millis(), 
+      return map(millis(), 
       lastPulse + pulseDurationUp, lastPulse + pulseDurationUp + pulseDurationDown, 
-      defaultSize + expansion, defaultSize);
+      heartExpansion, 1.0);
     }
 
-    return defaultSize - 50; // SICK ERRROR
+    return  0.5; // SICK ERRROR
   }
-
 
   void checkMode() {
     int currentTime = millis();

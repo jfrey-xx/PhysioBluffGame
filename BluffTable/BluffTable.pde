@@ -3,8 +3,10 @@ import fr.inria.papart.procam.*;
 import fr.inria.papart.procam.display.*;
 import org.bytedeco.javacpp.*;
 import toxi.geom.*;
-
 import fr.inria.guimodes.*;
+// import to reduce logging
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 Papart papart;
 
@@ -12,12 +14,8 @@ Papart papart;
 int framePosX = 1920;
 int framePosY = 0;
 
-boolean useProjector;
-
 // for debug, we will print FPS every second
 int lastFPS = 0;
-
-/** FIXME: should stay inside ambientFeedback, quick'n dirty way to read those in puppet **/
 
 // One (ambient + heart) feedback per player 
 AmbientFeedback[] ambientFeedbacks;
@@ -28,6 +26,9 @@ int debugPlayer = 0;
 
 // Undecorated frame 
 public void init() {
+  // javaCV is kind of verbose by default
+  Logger.getLogger("org.bytedeco.javacv").setLevel(Level.OFF);
+  Logger.getLogger("org.bytedeco.javacv.ObjectFinder").setLevel(Level.OFF);
   frame.removeNotify(); 
   frame.setUndecorated(true); 
   frame.addNotify(); 
@@ -42,26 +43,26 @@ void setup() {
   if (limitFPS > 0) {
     frameRate(limitFPS);
   }
+  int frameSizeX = 800;
+  int frameSizeY = 600;
 
-  useProjector = true;
-  int frameSizeX = 1280;
-  int frameSizeY = 800;
-
-  if (!useProjector) {
-    frameSizeX = 640 * 2;
-    frameSizeY = 480 * 2;
-  }
-
-  if (noCameraMode) {
-    frameSizeX = 1280;
-    frameSizeY = 800;
+  if (useProjector) {
+    frameSizeX = 1920;
+    frameSizeY = 1200;
   }
 
   size(frameSizeX, frameSizeY, OPENGL);
   papart = new Papart(this);
 
-  if (noCameraMode) {
-    papart.initNoCamera(1);
+  if (!cameraMode) {
+    ProjectorDisplay projector;
+    projector = new ProjectorDisplay(this, Papart.proCamCalib);
+    projector.setZNearFar(10, 6000);
+    projector.setQuality(1);
+    projector.init();
+
+    papart.setDisplay(projector);
+    papart.setNoTrackingCamera();
   } else {
     if (useProjector) {
       papart.initProjectorCamera(str(camNumber), Camera.Type.OPENCV);
@@ -84,8 +85,9 @@ void setup() {
     heartFeedbacks[i].noCameraLocationX = 200 * i;
   }
 
-  if (!noCameraMode)
+  if (cameraMode) {
     papart.startTracking();
+  }
 }
 
 
@@ -97,31 +99,9 @@ void draw() {
   }
 }
 
-boolean test = false;
 boolean isAmbientSet = false;
 
 void keyPressed() {
-
-  // Placed here, bug if it is placed in setup().
-  if (key == ' ')
-    frame.setLocation(framePosX, framePosY);
-
-  if (key == 't') {
-    test = !test;
-    println("switch test to: " + test);
-  }
-
-  if (key =='a') {
-    isAmbientSet = !isAmbientSet;
-    println("switch ambientSet to: " + isAmbientSet);
-  }
-  if (key =='c') {
-    checkCalibration = !checkCalibration;
-    println("switch checkCalibration to: " + checkCalibration);
-  }
-  if (key =='g') {
-    System.gc();
-  }
 
   // 7/8: select player-- or player++
   if (key == '7') {
@@ -137,6 +117,16 @@ void keyPressed() {
       debugPlayer = nbPlayers-1;
     }
     println("Select player: " + debugPlayer);
+  }
+
+
+  if (key =='a') {
+    isAmbientSet = !isAmbientSet;
+    println("switch ambientSet to: " + isAmbientSet);
+  }
+  if (key =='c') {
+    checkCalibration = !checkCalibration;
+    println("switch checkCalibration to: " + checkCalibration);
   }
 
   if (key == '0') {
