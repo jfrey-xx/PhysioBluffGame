@@ -16,7 +16,7 @@ Target target;
 boolean isBeatingSet = false;
 
 // will draw 2D rectangles to on whole paperScreen area
-boolean testCalibration = false;
+boolean checkCalibration = false;
 
 // for debug, we will print FPS every second
 int lastFPS = 0;
@@ -87,9 +87,10 @@ void keyPressed() {
       println("set tracking to: " + str(isBeatingSet));
     }
   }
+  
   if (key == 'c') {
-    testCalibration = !testCalibration;
-    println("set calibration test to: " + str(testCalibration));
+    checkCalibration = !checkCalibration;
+    println("set calibration test to: " + str(checkCalibration));
   }
 
   // save target

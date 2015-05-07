@@ -3,7 +3,7 @@ import processing.net.*;
 
 public class Target  extends PaperScreen {
 
-  // one feedback that'll be dublicated upon drawing
+  // one feedback that'll be duplicated upon drawing
   BeatingHeart heart;
 
   // one stream to read current player inner state
@@ -64,7 +64,7 @@ public class Target  extends PaperScreen {
     beginDraw3D();
     background(0);
 
-    if (testCalibration) {
+    if (checkCalibration) {
       fill(255);
       rect(0, 0, 420, 297);
     }
@@ -88,7 +88,7 @@ public class Target  extends PaperScreen {
     rotateZ(HALF_PI*2.0);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
-    if (testCalibration) {
+    if (checkCalibration) {
       pushStyle();
       fill(128);
       rect( 0, 0, imWidth, imHeight);
@@ -129,7 +129,7 @@ public class Target  extends PaperScreen {
     rotateZ(HALF_PI*2.0);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
-    if (testCalibration) {
+    if (checkCalibration) {
       pushStyle();
       fill(128);
       rect( 0, 0, imWidth, imHeight);
