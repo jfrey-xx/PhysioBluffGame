@@ -55,14 +55,21 @@ void setup() {
   papart = new Papart(this);
 
   if (!cameraMode) {
-    ProjectorDisplay projector;
-    projector = new ProjectorDisplay(this, Papart.proCamCalib);
-    projector.setZNearFar(10, 6000);
-    projector.setQuality(1);
-    projector.init();
+    // with no camera but project: aimed to be positionned by loading previous xml file
+    if (useProjector) {
+      ProjectorDisplay projector;
+      projector = new ProjectorDisplay(this, Papart.proCamCalib);
+      projector.setZNearFar(10, 6000);
+      projector.setQuality(1);
+      projector.init();
 
-    papart.setDisplay(projector);
-    papart.setNoTrackingCamera();
+      papart.setDisplay(projector);
+      papart.setNoTrackingCamera();
+    }
+    // no camera and no projector: on-screen display, for debug
+    else {
+      papart.initNoCamera(1);
+    }
   } else {
     if (useProjector) {
       papart.initProjectorCamera(str(camNumber), Camera.Type.OPENCV);
@@ -80,7 +87,7 @@ void setup() {
   for (int i = 0; i < nbPlayers; i++) {
     ambientFeedbacks[i] = new AmbientFeedback(i);
     heartFeedbacks[i] = new HeartFeedback(i);
-    // space for noCameraMode
+    // space for no camera and no projector
     ambientFeedbacks[i].noCameraLocationX = 200 * i;
     heartFeedbacks[i].noCameraLocationX = 200 * i;
   }

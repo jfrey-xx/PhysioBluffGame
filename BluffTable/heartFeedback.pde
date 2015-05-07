@@ -6,7 +6,7 @@ public class HeartFeedback  extends PaperScreen {
   // one feedback that'll be duplicated upon drawing
   BeatingHeart heart;
 
-  // position for noCamera
+  // position when !cameraMode && !useProjector
   int noCameraLocationX = 0;
   int noCameraLocationY = 0;
 
@@ -33,17 +33,17 @@ public class HeartFeedback  extends PaperScreen {
     if (feedbackFromNetwork) {
       initNetwork();
     }
-
-    useManualLocation(false);
   }
 
   void draw() {
     float imWidth = 210;
     float imHeight = 150;
 
-    // on startup lock position, even with wecam, so we could share peacefully the same board between PaperScreen
-    setLocation(noCameraLocationX, noCameraLocationY, 0 );
-    
+    // equivalent to debug mode
+    if (!cameraMode && !useProjector) { 
+      setLocation(noCameraLocationX, noCameraLocationY, 0 );
+    }
+
     // only read data from network (and update accordingly mode) if option set, otherwise use a sin
     if (feedbackFromNetwork) {
       updateNetwork();
