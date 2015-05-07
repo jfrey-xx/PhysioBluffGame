@@ -6,7 +6,8 @@ public class Target  extends PaperScreen {
   // one feedback that'll be dublicated upon drawing
   BeatingHeart heart;
 
-
+  // one stream to read current player inner state
+  private  ReaderLSL readerBPM;
 
   int playerID = 0;
 
@@ -21,6 +22,10 @@ public class Target  extends PaperScreen {
 
     heart = new BeatingHeart();
     heart.setHeartRate(70);
+
+    if (feedbackFromNetwork) {
+      initNetwork();
+    }
   }
 
   void draw() {
@@ -40,9 +45,14 @@ public class Target  extends PaperScreen {
       markerBoard.blockUpdate(cameraTracking, 1000);
     }
 
-    float sinTime = sin( (float) millis() / 7724.2f * TWO_PI );
-    heart.setHeartRate((int) (120 + 60 * sinTime));
-    //heart.setHeartRate(50);
+
+    // only read data from network (and update accordingly mode) if option set, otherwise use a sin
+    if (feedbackFromNetwork) {
+      updateNetwork();
+    } else {
+      float sinTime = sin( (float) millis() / 7724.2f * TWO_PI / (1 + playerID));
+      heart.setHeartRate((int) (120 + 60 * sinTime));
+    }
     heart.setHeartRatio(0.5);
     heart.update();
 
@@ -60,7 +70,7 @@ public class Target  extends PaperScreen {
       fill(255);
       rect(0, 0, 420, 297);
     }
-    
+
     // TODO: positionning of one feedback and the other could be way simpler rotating around paperscreen center
 
     /** View self **/
@@ -158,6 +168,20 @@ public class Target  extends PaperScreen {
     //this.screen.setPos(mat);
     //screen.setTransformation(mat);
     setProjection(mat);
+  }
+  
+    // try to resolve LSL streams
+  private void initNetwork() {
+    readerBPM = new ReaderLSL(LSLBPMStream, playerID);
+  }
+
+  // read data from LSL, update internal state
+  private void updateNetwork() {
+    double[] dataBPM = readerBPM.read();
+    if (dataBPM != null && dataBPM.length > 1) {
+      double bpm = dataBPM[1];
+      heart.setHeartRate((int) bpm);
+    }
   }
 }
 
