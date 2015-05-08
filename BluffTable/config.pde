@@ -20,8 +20,6 @@ final String LSLDetectionStream = "detection";
 // limit main program FPS (0 to disable)
 final int limitFPS = 30;
 
-final int nbPlayers = 1;
-
 // condition for feedback
 // -1 no feedback
 // 1 ambient feedback
@@ -34,4 +32,10 @@ double ThresholdIdx = 90f;
 
 // 0: no HR feedback, 1: HR feedback others, 2: HR feedback all
 int conditionHR = 2;
+
+final static String textSelf = "moi";
+
+final int nbPlayers = 3;
+// change this according to actual players' name -- replaced by generic term if too short compared to nbPlayers
+final static String[] textPlayers = {"Jane", "René", "William"};
 

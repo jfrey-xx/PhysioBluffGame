@@ -48,9 +48,13 @@ public class HeartFeedback  extends PaperScreen {
 
     String playerText;
     if (selfSide) {
-      playerText = "self";
+      playerText = textSelf;
     } else {
-      playerText = "ID " + str(playerID);
+      if (playerID < textPlayers.length) {
+        playerText = textPlayers[playerID];
+      } else {
+        playerText = "ID " + str(playerID);
+      }
     }
 
     // center, set border, lift plane
