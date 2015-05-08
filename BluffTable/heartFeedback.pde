@@ -153,16 +153,16 @@ public class HeartFeedback  extends PaperScreen {
   }
 
   public void saveLocation() {
-    String filename = "data/target_" + str(playerID) + "_position.xml";
-    println("Saving location to: " + filename);
+    String filename = "data/heart_" + str(playerID) + "_position.xml";
+    println("heart " + str(playerID) + ", saving location to: " + filename);
     saveLocationTo(filename);
   }
 
   public void loadLocation() {
     // reset any manual location before applying a previous state
     setLocation(0, 0, 0 );
-    String filename = "data/target_" + str(playerID) + "_position.xml";
-    println("Loading location from: " + filename);
+    String filename = "data/target_" + str(playerID) + "_heart.xml";
+    println("heart " + str(playerID) + ", loading location from: " + filename);
     loadLocationFrom(filename);
   }
 

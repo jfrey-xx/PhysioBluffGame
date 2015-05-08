@@ -10,10 +10,6 @@ import java.util.logging.Level;
 
 Papart papart;
 
-// Frame location. 
-int framePosX = 1920;
-int framePosY = 0;
-
 // for debug, we will print FPS every second
 int lastFPS = 0;
 
@@ -34,9 +30,6 @@ public void init() {
   frame.addNotify(); 
   super.init();
 }
-
-PVector boardSize = new PVector(297, 210);   //  21 * 29.7 cm
-float boardResolution = 1;  // 3 pixels / mm
 
 void setup() {
   // limit FPS if option is set
@@ -100,13 +93,11 @@ void setup() {
 
 
 void draw() {
-  if (millis() - lastFPS > 1000) {
+  if (millis() - lastFPS > 5000) {
     println(millis() + " -- FPS: " + frameRate);
     lastFPS = millis();
   }
 }
-
-boolean isAmbientSet = false;
 
 void keyPressed() {
 
@@ -126,16 +117,44 @@ void keyPressed() {
     println("Select player: " + debugPlayer);
   }
 
-
+  /*** disable / enable tracking for ambient and then heart ***/
   if (key =='a') {
-    isAmbientSet = !isAmbientSet;
-    println("switch ambientSet to: " + isAmbientSet);
+    ambientFeedbacks[debugPlayer].useManualLocation(true);
+    println("Stick ambient of player " + str(debugPlayer));
   }
+  if (key =='A') {
+    ambientFeedbacks[debugPlayer].useManualLocation(false);
+    println("Track ambient of player " + str(debugPlayer));
+  }
+  if (key =='h') {
+    heartFeedbacks[debugPlayer].useManualLocation(true);
+    println("Stick heart of player " + str(debugPlayer));
+  }
+
+  /*** save/load location for *all* PaperScreen ***/
+  // TODO: check that files exists
+  if (key == 's') {
+    for (int i = 0; i < nbPlayers; i++) {
+      ambientFeedbacks[i].saveLocation();
+      heartFeedbacks[i].saveLocation();
+    }
+  }
+
+  // load target
+  if (key == 'l') {
+    for (int i = 0; i < nbPlayers; i++) {
+      ambientFeedbacks[i].loadLocation();
+      heartFeedbacks[i].loadLocation();
+    }
+  }
+
+  /*** debug ***/
   if (key =='c') {
     checkCalibration = !checkCalibration;
     println("switch checkCalibration to: " + checkCalibration);
   }
 
+  /*** set manually ambient feedback ***/
   if (key == '0') {
     ambientFeedbacks[debugPlayer].mode.set("clear");
   }

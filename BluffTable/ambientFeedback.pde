@@ -75,9 +75,9 @@ public class AmbientFeedback  extends PaperScreen {
 
   void setup() {
     setDrawingSize(ambientWidth, ambientHeight);
-    //loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
-    loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
-    
+    loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
+    //loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
+
     initShaders();
     initModes();
     if (feedbackFromNetwork) {
@@ -157,16 +157,18 @@ public class AmbientFeedback  extends PaperScreen {
       return;
     }
 
-    // one position for dummy teegi
-    if (!cameraMode) {
+    // equivalent to debug mode
+    if (!cameraMode && !useProjector) { 
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
-    if (isAmbientSet) {
-      markerBoard.blockUpdate(cameraTracking, 1000);
+    beginDraw3D();
+
+    if (checkCalibration) {
+      fill(0, 0, 255);
+      rect(0, 0, 420, 297);
     }
 
-    beginDraw3D();
     translate(0, 0, -5);
 
     if (mode.is("waves") || mode.is("pixelate") || mode.is("noise")) {
@@ -312,6 +314,20 @@ public class AmbientFeedback  extends PaperScreen {
     feedbackExplicit.image(currentBody, 37, 35, currentBody.width*imgScale, currentBody.height*imgScale);
     //feedbackExplicit.resize(imgScale,imgScale);
     feedbackExplicit.endDraw();
+  }
+
+  public void saveLocation() {
+    String filename = "data/ambient_" + str(playerID) + "_position.xml";
+    println("ambient " + str(playerID) + ", saving location to: " + filename);
+    saveLocationTo(filename);
+  }
+
+  public void loadLocation() {
+    // reset any manual location before applying a previous state
+    setLocation(0, 0, 0 );
+    String filename = "data/target_" + str(playerID) + "_position.xml";
+    println("ambient " + str(playerID) + ", loading location from: " + filename);
+    loadLocationFrom(filename);
   }
 }
 

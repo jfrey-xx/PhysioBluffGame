@@ -5,8 +5,8 @@
 final int camNumber = 0;
 
 // main XP
-final boolean cameraMode = true;
-final boolean useProjector = true;
+final boolean cameraMode = false;
+final boolean useProjector = false;
 // if true, will project white screen on puppet paper to check calibration
 boolean checkCalibration = false;
 
