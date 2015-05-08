@@ -61,6 +61,7 @@ public class HeartFeedback  extends PaperScreen {
     beginDraw3D();
     pushStyle();
     textSize(25);
+    textAlign(CENTER, CENTER);
 
     if (checkCalibration) {
       fill(0, 192, 0, 128);
@@ -103,7 +104,7 @@ public class HeartFeedback  extends PaperScreen {
     // finally, the image -- or idle animation if condition not met
     if (conditionHR >= 2) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
-      text("self", 105, 50);
+      text("self", imWidth/4*3, imHeight/4);
     } else {
       if (idle != null) {
         image(idle.graphics, 0, 0, imWidth, imHeight);
@@ -149,7 +150,7 @@ public class HeartFeedback  extends PaperScreen {
     // finally, the image -- or idle animation if condition not met
     if (conditionHR >= 1) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
-      text("ID " + str(playerID), 105, 50);
+      text("ID " + str(playerID), imWidth/4*3, imHeight/4);
     } else {
       if (idle != null) {
         image(idle.graphics, 0, 0, imWidth, imHeight);
