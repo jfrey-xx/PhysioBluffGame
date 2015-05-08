@@ -6,3 +6,5 @@ HRFeedback: proof of concept, code coming from HR phycs. To be used with OpenViB
 Heart: first version of the heart rate feebdack
 
 TestTrack: tracking one board, testing 3D "model"
+
+IdleAnimation: whot to show when no HR feedback is given
