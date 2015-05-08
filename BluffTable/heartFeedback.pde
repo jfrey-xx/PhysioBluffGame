@@ -38,9 +38,77 @@ public class HeartFeedback  extends PaperScreen {
     }
   }
 
-  void draw() {
+  // self: change orientation / text / image if side seen by self or others
+  private void drawFeedback(boolean selfSide) {
+    // feedback is a A5 paper sheet, folded at a 90° angle to make a stand and put in the middle of a A3 paper sheet
     float imWidth = 210;
     float imHeight = 150;
+
+    // TODO: positionning of one feedback and the other could be way simpler rotating around paperscreen center
+
+    String playerText;
+    if (selfSide) {
+      playerText = "self";
+    } else {
+      playerText = "ID " + str(playerID);
+    }
+
+    // center, set border, lift plane
+    pushMatrix();
+    if (selfSide) {
+      translate(imWidth/2, (297 - imWidth) / 2, 0.0); // imWidth == imHeight * sqrt(2), ie square base
+      rotateX(HALF_PI*0.5);
+    } else {
+      translate(imWidth/2, 297 - (297 - imWidth) / 2, 0.0); // imWidth == imHeight * sqrt(2), ie square base
+      rotateX(HALF_PI*-2.5);
+    }
+
+    // mirror / flip
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    rotateX(HALF_PI*0.0);
+    if (selfSide) {
+      rotateY(HALF_PI*2.0);
+    } else {
+      rotateY(HALF_PI*0.0);
+    }
+    rotateZ(HALF_PI*2.0);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    if (checkCalibration) {
+      pushStyle();
+      fill(0, 128, 0, 128);
+      rect( 0, 0, imWidth, imHeight);
+      popStyle();
+    }
+
+    // some margin for junction
+    pushMatrix();
+    translate(imWidth/2, imHeight/2, 0.0);
+    scale(0.8);
+    translate(-imWidth/2, -imHeight/2, 0.0);
+
+    fill(255);
+
+    // we display HR if condition for all or others side and condition others
+    if (conditionHR >= 2 || (conditionHR == 1 && !selfSide)) {
+      image(heart.graphics, 0, 0, imWidth, imHeight);
+      text(playerText, imWidth/4*3, imHeight/4);
+    }
+    // otherwise idle animation
+    else {
+      if (idle != null) {
+        image(idle.graphics, 0, 0, imWidth, imHeight);
+      }
+      text(playerText, imWidth/2, imHeight/2);
+    }
+
+    popMatrix();
+    popMatrix();
+    popMatrix();
+  }
+
+  void draw() {
 
     // equivalent to debug mode
     if (!cameraMode && !useProjector) { 
@@ -68,99 +136,9 @@ public class HeartFeedback  extends PaperScreen {
       rect(0, 0, 420, 297);
     }
 
-    // TODO: positionning of one feedback and the other could be way simpler rotating around paperscreen center
-
-    /** View self **/
-
-    // center, set border, lift plane
-    pushMatrix();
-    translate(imWidth/2, (297 - imWidth) / 2, 0.0); // imWidth == imHeight * sqrt(2), ie square base
-    rotateX(HALF_PI*0.5);
-    rotateY(HALF_PI*0.0);
-    rotateZ(HALF_PI*0.0);
-
-    // mirror / flip
-    pushMatrix();
-    translate(imWidth/2, imHeight/2, 0.0);
-    rotateX(HALF_PI*0.0);
-    rotateY(HALF_PI*2.0);
-    rotateZ(HALF_PI*2.0);
-    translate(-imWidth/2, -imHeight/2, 0.0);
-
-    if (checkCalibration) {
-      pushStyle();
-      fill(0, 128, 0, 128);
-      rect( 0, 0, imWidth, imHeight);
-      popStyle();
-    }
-
-    // some margin for junction
-    pushMatrix();
-    translate(imWidth/2, imHeight/2, 0.0);
-    scale(0.8);
-    translate(-imWidth/2, -imHeight/2, 0.0);
-
-    fill(255);
-    // finally, the image -- or idle animation if condition not met
-    if (conditionHR >= 2) {
-      image(heart.graphics, 0, 0, imWidth, imHeight);
-      text("self", imWidth/4*3, imHeight/4);
-    } else {
-      if (idle != null) {
-        image(idle.graphics, 0, 0, imWidth, imHeight);
-      }
-      text("self", imWidth/2, imHeight/2);
-    }
-
-    popMatrix();
-    popMatrix();
-    popMatrix();
-
-    /** View from others **/
-
-    // center, set border, lift plane
-    pushMatrix();
-    translate(imWidth/2, 297 - (297 - imWidth) / 2, 0.0);
-    rotateX(HALF_PI*-2.5);
-    rotateY(HALF_PI*0.0);
-    rotateZ(HALF_PI*0.0);
-
-    // mirror / flip
-    pushMatrix();
-    translate(imWidth/2, imHeight/2, 0.0);
-    rotateX(HALF_PI*0.0);
-    rotateY(HALF_PI*0.0);
-    rotateZ(HALF_PI*2.0);
-    translate(-imWidth/2, -imHeight/2, 0.0);
-
-    if (checkCalibration) {
-      pushStyle();
-      fill(0, 128, 0, 128);
-      rect( 0, 0, imWidth, imHeight);
-      popStyle();
-    }
-
-    // some margin for junction
-    pushMatrix();
-    translate(imWidth/2, imHeight/2, 0.0);
-    scale(0.8);
-    translate(-imWidth/2, -imHeight/2, 0.0);
-
-    fill(255);
-    // finally, the image -- or idle animation if condition not met
-    if (conditionHR >= 1) {
-      image(heart.graphics, 0, 0, imWidth, imHeight);
-      text("ID " + str(playerID), imWidth/4*3, imHeight/4);
-    } else {
-      if (idle != null) {
-        image(idle.graphics, 0, 0, imWidth, imHeight);
-      }
-      text("ID " + str(playerID), imWidth/2, imHeight/2);
-    }
-
-    popMatrix();
-    popMatrix();
-    popMatrix();
+    // two sides of the same coin
+    drawFeedback(true);
+    drawFeedback(false);
 
     popStyle();
     endDraw();
