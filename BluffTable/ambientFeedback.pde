@@ -95,12 +95,12 @@ public class AmbientFeedback  extends PaperScreen {
     bodys = new PImage[maxNoiseLevel+1];
     bodys[0] = loadImage("body_good.png");
     bodys[1] = loadImage("body_warning.png");
-    bodys[2] = loadImage("void.png");
+    bodys[2] = loadImage("body_none.png");
     // same for signs
     signs = new PImage[maxNoiseLevel+1];
     signs[0] = loadImage("sign_good.png");
     signs[1] = loadImage("sign_warning.png");
-    signs[2] = loadImage("sign_question.png");
+    signs[2] = loadImage("void.png");
   }
 
   private void initNetwork() {
