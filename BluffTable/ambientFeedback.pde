@@ -43,7 +43,7 @@ public class AmbientFeedback  extends PaperScreen {
 
   /*** explicit feedback ***/
   // fixed image
-  PImage furniture, teegi;
+  PImage furniture;
   // 3 images for body, each a noise level (good / warning / stop), pointer to current
   PImage [] bodys;
   // same, for sign
@@ -60,7 +60,7 @@ public class AmbientFeedback  extends PaperScreen {
   int maxNoiseLevel = 2;
   int noiseLevel = 0;
   // triggers shaky movements at this level and upper
-  int noiseShakyLevel = 2;
+  int noiseShakyLevel = 1;
 
   // feedback state
   private SecondaryMode mode;
@@ -91,17 +91,16 @@ public class AmbientFeedback  extends PaperScreen {
 
     // explicit feedback, load background images
     furniture = loadImage("furniture.png");
-    teegi = loadImage("teegi_sit.png");
     // init array and load the 3 bodys
     bodys = new PImage[maxNoiseLevel+1];
     bodys[0] = loadImage("body_good.png");
     bodys[1] = loadImage("body_warning.png");
-    bodys[2] = loadImage("body_stop.png");
+    bodys[2] = loadImage("void.png");
     // same for signs
     signs = new PImage[maxNoiseLevel+1];
     signs[0] = loadImage("sign_good.png");
     signs[1] = loadImage("sign_warning.png");
-    signs[2] = loadImage("sign_stop.png");
+    signs[2] = loadImage("sign_question.png");
   }
 
   private void initNetwork() {
@@ -297,7 +296,6 @@ public class AmbientFeedback  extends PaperScreen {
     background(0, 0, 0, 0);
     // show background images
     feedbackExplicit.image(furniture, 67, 231, furniture.width*imgScale, furniture.height*imgScale);
-    feedbackExplicit.image(teegi, 379, 193, teegi.width*imgScale, teegi.height*imgScale);
     // ** begin shacky effect for too noisy signals **
     if (noiseLevel >= noiseShakyLevel) {
       float shakeAmount = sin(millis()*shakySpeed/1000) * shakyRatio;
