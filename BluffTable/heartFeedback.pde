@@ -16,6 +16,9 @@ public class HeartFeedback  extends PaperScreen {
   // ref for LSL stream
   private int playerID;
 
+  // will be created by main sketch since it's shared by every one
+  private Idle idle = null;
+
   // we need an ID to read from LSL
   public HeartFeedback(int playerID) {
     this.playerID = playerID;
@@ -96,12 +99,17 @@ public class HeartFeedback  extends PaperScreen {
     scale(0.8);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
-    // finally, the image
+    fill(255);
+    // finally, the image -- or idle animation if condition not met
     if (conditionHR >= 2) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
+      text("self", 105, 50);
+    } else {
+      if (idle != null) {
+        image(idle.graphics, 0, 0, imWidth, imHeight);
+      }
+      text("self", imWidth/2, imHeight/2);
     }
-    fill(255);
-    text("self", 105, 50); 
 
     popMatrix();
     popMatrix();
@@ -137,12 +145,17 @@ public class HeartFeedback  extends PaperScreen {
     scale(0.8);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
-    // finally, the image
+    fill(255);
+    // finally, the image -- or idle animation if condition not met
     if (conditionHR >= 1) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
+      text("ID " + str(playerID), 105, 50);
+    } else {
+      if (idle != null) {
+        image(idle.graphics, 0, 0, imWidth, imHeight);
+      }
+      text("ID " + str(playerID), imWidth/2, imHeight/2);
     }
-    fill(255);
-    text("ID " + str(playerID), 105, 50); 
 
     popMatrix();
     popMatrix();
@@ -178,6 +191,10 @@ public class HeartFeedback  extends PaperScreen {
       double bpm = dataBPM[0];
       heart.setHeartRate((int) bpm);
     }
+  }
+
+  public void setIdle(Idle idle) {
+    this.idle = idle;
   }
 }
 

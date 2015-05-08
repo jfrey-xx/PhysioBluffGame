@@ -17,6 +17,9 @@ int lastFPS = 0;
 AmbientFeedback[] ambientFeedbacks;
 HeartFeedback[] heartFeedbacks;
 
+// same idle animation for all
+Idle idle;
+
 // For manual debug, current player
 int debugPlayer = 0;
 
@@ -74,12 +77,14 @@ void setup() {
     }
   }
 
+  idle = new Idle();
   ambientFeedbacks = new AmbientFeedback[nbPlayers];
   heartFeedbacks = new HeartFeedback[nbPlayers]; 
 
   for (int i = 0; i < nbPlayers; i++) {
     ambientFeedbacks[i] = new AmbientFeedback(i);
     heartFeedbacks[i] = new HeartFeedback(i);
+    heartFeedbacks[i].setIdle(idle);
     // space for no camera and no projector
     ambientFeedbacks[i].noCameraLocationX = 200 * i;
     heartFeedbacks[i].noCameraLocationX = 200 * i;
@@ -91,6 +96,7 @@ void setup() {
 }
 
 void draw() {
+  idle.update();
   if (millis() - lastFPS > 5000) {
     println(millis() + " -- FPS: " + frameRate);
     lastFPS = millis();
@@ -132,7 +138,7 @@ void keyPressed() {
     heartFeedbacks[debugPlayer].useManualLocation(false);
     println("Track heart of player " + str(debugPlayer));
   }
-  
+
   /*** save/load location for *all* PaperScreen ***/
   // TODO: check that files exists
   if (key == 's') {
