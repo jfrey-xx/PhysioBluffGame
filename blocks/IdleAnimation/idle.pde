@@ -61,14 +61,19 @@ class Idle {
 
     // draw points
     for (int i = 0; i < nbPoints; i++) {
+      float val = pointColors[i];
 
       // space points equally on horizontal axis
       float slice = texWidth / nbPoints;
       float pos = slice/2 + slice * i;
-      
-      float wid = slice/2;
 
-      graphics.fill(255, 255, 255, pointColors[i]);
+      // each point its color, vary hue
+      float hue = 255f/(nbPoints) * (i);
+      graphics.colorMode(HSB, 255);
+
+      float wid = map(val, 0, 255, slice/3, slice/2);
+      
+      graphics.fill(hue, 255, 255, val);
       graphics.ellipse(pos, texHeight/2, wid, wid);
     }
 
