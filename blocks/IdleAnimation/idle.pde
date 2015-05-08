@@ -7,7 +7,7 @@ class Idle {
   private int texHeight;
 
   // the animation will consist in fading points
-  private int nbPoints = 3;
+  private int nbPoints = 18;
   private float[] pointColors;
   private int curPoint = 0;
 
@@ -35,7 +35,7 @@ class Idle {
     graphics.ellipseMode(CENTER);
 
     // reduce value to increase frequency
-    float period = 1000f; 
+    float period = 20000f / nbPoints; 
     float c = millis() % period;
 
     if (goUp) {
@@ -63,22 +63,25 @@ class Idle {
     for (int i = 0; i < nbPoints; i++) {
       float val = pointColors[i];
 
-      // space points equally on horizontal axis
-      float slice = texWidth / nbPoints;
-      float pos = slice/2 + slice * i;
-
       // each point its color, vary hue
       float hue = 255f/(nbPoints) * (i);
       graphics.colorMode(HSB, 255);
-
-      float wid = map(val, 0, 255, slice/3, slice/2);
-      
       graphics.fill(hue, 255, 255, val);
-      graphics.ellipse(pos, texHeight/2, wid, wid);
+
+      // space points equally around a circle
+      float angle=TWO_PI/(float)nbPoints;
+      //float radius=map(val, 0, 255, 0, texWidth/5); // animation from/toward center
+      float radius=texWidth/4; // animation from/toward center
+
+      float slice = ((radius * PI * 2) / nbPoints) * 0.75;
+      // slight zooming effect
+      float wid = map(val, 0, 255, slice/3, slice);
+
+      // the circle will be spinning (WARNING: crazy overall effect)
+      float toto = millis()/10000f % TWO_PI; // sin( millis() / 7724.2f * PI) * PI;
+
+      graphics.ellipse(radius*sin(angle*i - toto) + texWidth/2, radius*cos(angle*i - toto) + texHeight/2, wid, wid);
     }
-
-
-
 
     graphics.endDraw();
   }
