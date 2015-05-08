@@ -74,8 +74,9 @@ public class AmbientFeedback  extends PaperScreen {
   }
 
   void setup() {
-    setDrawingSize(ambientWidth, ambientHeight);
-    loadMarkerBoard(sketchPath + "/data/A3-small1.cfg", ambientWidth, ambientHeight);
+    setDrawingSize(420, 297);
+    loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
+    //loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
 
     initShaders();
     initModes();
@@ -156,28 +157,29 @@ public class AmbientFeedback  extends PaperScreen {
       return;
     }
 
-    // one position for dummy teegi
-    if (noCameraMode) {
+    // equivalent to debug mode
+    if (!cameraMode && !useProjector) { 
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
     }
 
-    if (isAmbientSet) {
-      markerBoard.blockUpdate(cameraTracking, 1000);
-    }
-
     beginDraw3D();
-    translate(0, 0, -5);
+    pushStyle();
 
     if (mode.is("waves") || mode.is("pixelate") || mode.is("noise")) {
       updateShaders();
       drawFeedbackAmbient();
-      image(feedbackAmbient, -241, -420, 789, 694);
+      image(feedbackAmbient, -210, -420, 789, 694);
     } else if (mode.is("explicit_OK") || mode.is("explicit_WARNING") || mode.is("explicit_STOP")) {
       drawFeedbackExplicit();
       // sepecial fuction to put image in right way + draw left to the board
-      DrawUtils.drawImage(currentGraphics, feedbackExplicit, 450, 0, 150, 150);
+      DrawUtils.drawImage(currentGraphics, feedbackExplicit, 125, 62, 150, 150);
     }
 
+    if (checkCalibration) {
+      fill(0, 0, 255, 128);
+      rect(0, 0, 420, 297);
+    }
+    popStyle();
     endDraw();
   }
 
@@ -188,8 +190,8 @@ public class AmbientFeedback  extends PaperScreen {
     double[] dataDetection = readerDetection.read();
 
     // update something only if we got data
-    if (dataBPM != null && dataDetection != null) {
-      double idx = dataBPM[0];
+    if (dataBPM != null && dataBPM.length > 1 && dataDetection != null) {
+      double idx = dataBPM[1];
       double detection = dataDetection[0];
 
       // temp variable to detect change; not sure I'd used modes...
@@ -197,8 +199,8 @@ public class AmbientFeedback  extends PaperScreen {
 
       // now define new mode (and clamp condition, just in case)
       // NB: very tempting to use switch in there :D
-      if (condition <= 0) {
-        condition = -1;
+      if (conditionAmbient <= 0) {
+        conditionAmbient = -1;
         newMode = "clear";
       } else {
         // current stae of noise
@@ -210,7 +212,7 @@ public class AmbientFeedback  extends PaperScreen {
           noiseLevel = 1;
         }
         // would be *really* simpler without modes
-        if (condition == 1) {
+        if (conditionAmbient == 1) {
 
           if (noiseLevel == 0) {
             newMode = "waves";
@@ -221,8 +223,8 @@ public class AmbientFeedback  extends PaperScreen {
           if (noiseLevel == 2) {
             newMode = "noise";
           }
-        } else if (condition >= 2) {
-          condition = 2;
+        } else if (conditionAmbient >= 2) {
+          conditionAmbient = 2;
           if (noiseLevel == 0) {
             newMode = "explicit_OK";
           }
@@ -311,6 +313,20 @@ public class AmbientFeedback  extends PaperScreen {
     feedbackExplicit.image(currentBody, 37, 35, currentBody.width*imgScale, currentBody.height*imgScale);
     //feedbackExplicit.resize(imgScale,imgScale);
     feedbackExplicit.endDraw();
+  }
+
+  public void saveLocation() {
+    String filename = "data/ambient_" + str(playerID) + "_position.xml";
+    println("ambient " + str(playerID) + ", saving location to: " + filename);
+    saveLocationTo(filename);
+  }
+
+  public void loadLocation() {
+    // reset any manual location before applying a previous state
+    setLocation(0, 0, 0 );
+    String filename = "data/ambient_" + str(playerID) + "_position.xml";
+    println("ambient " + str(playerID) + ", loading location from: " + filename);
+    loadLocationFrom(filename);
   }
 }
 

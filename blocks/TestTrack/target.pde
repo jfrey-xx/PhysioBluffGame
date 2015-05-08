@@ -1,25 +1,18 @@
 
 import processing.net.*;
 
-public class HeartFeedback  extends PaperScreen {
+public class Target  extends PaperScreen {
 
   // one feedback that'll be duplicated upon drawing
   BeatingHeart heart;
 
-  // position when !cameraMode && !useProjector
-  int noCameraLocationX = 0;
-  int noCameraLocationY = 0;
-
   // one stream to read current player inner state
   private  ReaderLSL readerBPM;
 
-  // ref for LSL stream
-  private int playerID;
+  int playerID = 0;
 
-  // we need an ID to read from LSL
-  public HeartFeedback(int playerID) {
-    this.playerID = playerID;
-  }
+  // 0: no feedback, 1: feedback others, 2: feedback all
+  int conditionFeedback = 0;
 
   void setup() {
     // load A3 marker board
@@ -36,12 +29,18 @@ public class HeartFeedback  extends PaperScreen {
   }
 
   void draw() {
+
     float imWidth = 210;
     float imHeight = 150;
 
-    // equivalent to debug mode
-    if (!cameraMode && !useProjector) { 
+    // position for noCamera
+    int noCameraLocationX = 0;
+    int noCameraLocationY = 0;
+
+    if (!cameraMode) {
       setLocation(noCameraLocationX, noCameraLocationY, 0 );
+    } else {
+      useManualLocation(isBeatingSet);
     }
 
     // only read data from network (and update accordingly mode) if option set, otherwise use a sin
@@ -55,12 +54,18 @@ public class HeartFeedback  extends PaperScreen {
     heart.setHeartRatio(0.5);
     heart.update();
 
-    beginDraw3D();
-    pushStyle();
+    // for t.weak mode
+    conditionFeedback = 2;
+
     textSize(25);
+    //imageMode(CENTER);
+
+    //rectMode(CENTER);
+    beginDraw3D();
+    background(0);
 
     if (checkCalibration) {
-      fill(0, 192, 0, 128);
+      fill(255);
       rect(0, 0, 420, 297);
     }
 
@@ -85,7 +90,7 @@ public class HeartFeedback  extends PaperScreen {
 
     if (checkCalibration) {
       pushStyle();
-      fill(0, 128, 0, 128);
+      fill(128);
       rect( 0, 0, imWidth, imHeight);
       popStyle();
     }
@@ -97,7 +102,7 @@ public class HeartFeedback  extends PaperScreen {
     translate(-imWidth/2, -imHeight/2, 0.0);
 
     // finally, the image
-    if (conditionHR >= 2) {
+    if (conditionFeedback >= 2) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
     }
     fill(255);
@@ -126,7 +131,7 @@ public class HeartFeedback  extends PaperScreen {
 
     if (checkCalibration) {
       pushStyle();
-      fill(0, 128, 0, 128);
+      fill(128);
       rect( 0, 0, imWidth, imHeight);
       popStyle();
     }
@@ -138,7 +143,7 @@ public class HeartFeedback  extends PaperScreen {
     translate(-imWidth/2, -imHeight/2, 0.0);
 
     // finally, the image
-    if (conditionHR >= 1) {
+    if (conditionFeedback >= 1) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
     }
     fill(255);
@@ -148,21 +153,19 @@ public class HeartFeedback  extends PaperScreen {
     popMatrix();
     popMatrix();
 
-    popStyle();
     endDraw();
   }
 
+
   public void saveLocation() {
-    String filename = "data/heart_" + str(playerID) + "_position.xml";
-    println("heart " + str(playerID) + ", saving location to: " + filename);
+    String filename = "target_" + str(playerID) + "_position.xml";
+    println("Saving location to: " + filename);
     saveLocationTo(filename);
   }
 
   public void loadLocation() {
-    // reset any manual location before applying a previous state
-    setLocation(0, 0, 0 );
-    String filename = "data/heart_" + str(playerID) + "_position.xml";
-    println("heart " + str(playerID) + ", loading location from: " + filename);
+    String filename = "target_" + str(playerID) + "_position.xml";
+    println("Loading location from: " + filename);
     loadLocationFrom(filename);
   }
 
