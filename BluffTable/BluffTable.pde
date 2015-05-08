@@ -90,8 +90,6 @@ void setup() {
   }
 }
 
-
-
 void draw() {
   if (millis() - lastFPS > 5000) {
     println(millis() + " -- FPS: " + frameRate);
@@ -130,7 +128,11 @@ void keyPressed() {
     heartFeedbacks[debugPlayer].useManualLocation(true);
     println("Stick heart of player " + str(debugPlayer));
   }
-
+  if (key =='H') {
+    heartFeedbacks[debugPlayer].useManualLocation(false);
+    println("Track heart of player " + str(debugPlayer));
+  }
+  
   /*** save/load location for *all* PaperScreen ***/
   // TODO: check that files exists
   if (key == 's') {

@@ -55,13 +55,12 @@ public class HeartFeedback  extends PaperScreen {
     heart.setHeartRatio(0.5);
     heart.update();
 
+    beginDraw3D();
+    pushStyle();
     textSize(25);
 
-    beginDraw3D();
-    background(0);
-
     if (checkCalibration) {
-      fill(255);
+      fill(0, 192, 0, 128);
       rect(0, 0, 420, 297);
     }
 
@@ -86,7 +85,7 @@ public class HeartFeedback  extends PaperScreen {
 
     if (checkCalibration) {
       pushStyle();
-      fill(128);
+      fill(0, 128, 0, 128);
       rect( 0, 0, imWidth, imHeight);
       popStyle();
     }
@@ -127,7 +126,7 @@ public class HeartFeedback  extends PaperScreen {
 
     if (checkCalibration) {
       pushStyle();
-      fill(128);
+      fill(0, 128, 0, 128);
       rect( 0, 0, imWidth, imHeight);
       popStyle();
     }
@@ -149,6 +148,7 @@ public class HeartFeedback  extends PaperScreen {
     popMatrix();
     popMatrix();
 
+    popStyle();
     endDraw();
   }
 
@@ -161,7 +161,7 @@ public class HeartFeedback  extends PaperScreen {
   public void loadLocation() {
     // reset any manual location before applying a previous state
     setLocation(0, 0, 0 );
-    String filename = "data/target_" + str(playerID) + "_heart.xml";
+    String filename = "data/heart_" + str(playerID) + "_position.xml";
     println("heart " + str(playerID) + ", loading location from: " + filename);
     loadLocationFrom(filename);
   }

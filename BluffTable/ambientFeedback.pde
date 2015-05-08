@@ -74,7 +74,7 @@ public class AmbientFeedback  extends PaperScreen {
   }
 
   void setup() {
-    setDrawingSize(ambientWidth, ambientHeight);
+    setDrawingSize(420, 297);
     loadMarkerBoard(sketchPath + "/data/markers/nimp.png", 420, 297);
     //loadMarkerBoard(sketchPath + "/data/markers/A3-small1.cfg", 420, 297);
 
@@ -163,24 +163,23 @@ public class AmbientFeedback  extends PaperScreen {
     }
 
     beginDraw3D();
-
-    if (checkCalibration) {
-      fill(0, 0, 255);
-      rect(0, 0, 420, 297);
-    }
-
-    translate(0, 0, -5);
+    pushStyle();
 
     if (mode.is("waves") || mode.is("pixelate") || mode.is("noise")) {
       updateShaders();
       drawFeedbackAmbient();
-      image(feedbackAmbient, -241, -420, 789, 694);
+      image(feedbackAmbient, -210, -420, 789, 694);
     } else if (mode.is("explicit_OK") || mode.is("explicit_WARNING") || mode.is("explicit_STOP")) {
       drawFeedbackExplicit();
       // sepecial fuction to put image in right way + draw left to the board
-      DrawUtils.drawImage(currentGraphics, feedbackExplicit, 450, 0, 150, 150);
+      DrawUtils.drawImage(currentGraphics, feedbackExplicit, 125, 62, 150, 150);
     }
 
+    if (checkCalibration) {
+      fill(0, 0, 255, 128);
+      rect(0, 0, 420, 297);
+    }
+    popStyle();
     endDraw();
   }
 
@@ -325,7 +324,7 @@ public class AmbientFeedback  extends PaperScreen {
   public void loadLocation() {
     // reset any manual location before applying a previous state
     setLocation(0, 0, 0 );
-    String filename = "data/target_" + str(playerID) + "_position.xml";
+    String filename = "data/ambient_" + str(playerID) + "_position.xml";
     println("ambient " + str(playerID) + ", loading location from: " + filename);
     loadLocationFrom(filename);
   }
