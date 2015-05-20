@@ -20,10 +20,6 @@ final int SECOND_EXPLICIT_STOP = 6;
 final int nbModes = 7;
 String[] secondModes = new String[nbModes];
 
-// how long a new mode (ie feedback) should last before switching (in ms)
-// NB: also take into consideration network latency
-final int modeRefractoryPeriod = 1000;
-
 public class AmbientFeedback  extends PaperScreen {
 
   // position for noCamera
@@ -140,8 +136,8 @@ public class AmbientFeedback  extends PaperScreen {
       mode.add(secondModes[i], i);
     }
 
-    // by default show off with nice waves (I wonder who programmed such a nice shader...)
-    setMode("waves");
+    // by default nothing to show off with
+    setMode("clear");
   }
 
   void draw() {

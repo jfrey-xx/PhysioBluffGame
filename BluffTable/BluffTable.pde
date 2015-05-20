@@ -43,8 +43,8 @@ void setup() {
   int frameSizeY = 600;
 
   if (useProjector) {
-    frameSizeX = 1920;
-    frameSizeY = 1200;
+    frameSizeX = projectorX;
+    frameSizeY = projectorY;
   }
 
   size(frameSizeX, frameSizeY, OPENGL);
