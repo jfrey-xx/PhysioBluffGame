@@ -168,27 +168,21 @@ void keyPressed() {
   }
   if (key == '1') {
     ambientFeedbacks[debugPlayer].mode.set("waves");
-    ambientFeedbacks[debugPlayer].noiseLevel = 0;
   }
   if (key == '2') {
     ambientFeedbacks[debugPlayer].mode.set("pixelate");
-    ambientFeedbacks[debugPlayer].noiseLevel = 1;
   }
   if (key == '3') {
     ambientFeedbacks[debugPlayer].mode.set("noise");
-    ambientFeedbacks[debugPlayer].noiseLevel = 2;
   }
   if (key == '4') {
     ambientFeedbacks[debugPlayer].mode.set("explicit_OK");
-    ambientFeedbacks[debugPlayer].noiseLevel = 0;
   }
   if (key == '5') {
     ambientFeedbacks[debugPlayer].mode.set("explicit_WARNING");
-    ambientFeedbacks[debugPlayer].noiseLevel = 1;
   }
   if (key == '6') {
     ambientFeedbacks[debugPlayer].mode.set("explicit_STOP");
-    ambientFeedbacks[debugPlayer].noiseLevel = 2;
   }
 }
 

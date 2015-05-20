@@ -52,11 +52,8 @@ public class AmbientFeedback  extends PaperScreen {
   float shakyRatio = 5;
   float shakySpeed = 50;
 
-  // current and max noise level
+  // used to allocate images arrays, how many different explicit feedbacks we have
   int maxNoiseLevel = 2;
-  int noiseLevel = 0;
-  // triggers shaky movements at this level and upper
-  int noiseShakyLevel = 1;
 
   // feedback state
   private SecondaryMode mode;
@@ -192,14 +189,15 @@ public class AmbientFeedback  extends PaperScreen {
       // temp variable to detect change; not sure I'd used modes...
       String newMode = "clear";
 
+      // current stae of noise
+      int noiseLevel = 0;
+
       // now define new mode (and clamp condition, just in case)
       // NB: very tempting to use switch in there :D
       if (conditionAmbient <= 0) {
         conditionAmbient = -1;
         newMode = "clear";
       } else {
-        // current stae of noise
-        noiseLevel = 0;
         // no face wins
         if (detection < 1) {
           noiseLevel = 2;
@@ -293,13 +291,21 @@ public class AmbientFeedback  extends PaperScreen {
     // show background images
     feedbackExplicit.image(furniture, 67, 231, furniture.width*imgScale, furniture.height*imgScale);
     // ** begin shacky effect for too noisy signals **
-    if (noiseLevel >= noiseShakyLevel) {
+    if (mode.is("explicit_STOP") || mode.is("explicit_WARNING")) {
       float shakeAmount = sin(millis()*shakySpeed/1000) * shakyRatio;
-      // println(shakeAmount); // DEBUG
       // shaky == translation in X
       feedbackExplicit.translate(shakeAmount, 0);
     }
+
     // point to current sign/body
+    int noiseLevel = 0;
+    if (mode.is("explicit_WARNING")) {
+      noiseLevel = 1;
+    }
+    if (mode.is("explicit_STOP")) {
+      noiseLevel = 2;
+    }
+
     PImage currentSign = signs[noiseLevel];
     PImage currentBody = bodys[noiseLevel];
     // show time!
