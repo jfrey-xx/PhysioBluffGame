@@ -160,7 +160,7 @@ public class AmbientFeedback  extends PaperScreen {
     if (mode.is("waves") || mode.is("pixelate") || mode.is("noise")) {
       updateShaders();
       drawFeedbackAmbient();
-      image(feedbackAmbient, -210, -420, 789, 694);
+      image(feedbackAmbient, -180, -450, 800, 800);
     } else if (mode.is("explicit_OK") || mode.is("explicit_WARNING") || mode.is("explicit_STOP")) {
       drawFeedbackExplicit();
       // sepecial fuction to put image in right way + draw left to the board
