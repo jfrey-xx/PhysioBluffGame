@@ -79,6 +79,12 @@ public class HeartFeedback  extends PaperScreen {
     rotateZ(HALF_PI*2.0);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
+    // set a plain black background color in order to override amient feedback
+    pushStyle();
+    fill(0);
+    rect( 0, 0, imWidth, imHeight);
+    popStyle();
+
     if (checkCalibration) {
       pushStyle();
       fill(0, 128, 0, 128);
@@ -92,11 +98,16 @@ public class HeartFeedback  extends PaperScreen {
     scale(0.8);
     translate(-imWidth/2, -imHeight/2, 0.0);
 
+    // z-fight against background
+    translate(0, 0, -0.1);
+
     fill(255);
 
     // we display HR if condition for all or others side and condition others
     if (conditionHR >= 2 || (conditionHR == 1 && !selfSide)) {
       image(heart.graphics, 0, 0, imWidth, imHeight);
+      // z-fight against image
+      translate(0, 0, -0.1);
       text(playerText, imWidth/4*3, imHeight/4);
     }
     // otherwise idle animation
@@ -104,6 +115,8 @@ public class HeartFeedback  extends PaperScreen {
       if (idle != null) {
         image(idle.graphics, 0, 0, imWidth, imHeight);
       }
+      // z-fight against image
+      translate(0, 0, -0.1);
       text(playerText, imWidth/2, imHeight/2);
     }
 
