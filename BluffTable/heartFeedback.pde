@@ -87,7 +87,7 @@ public class HeartFeedback  extends PaperScreen {
 
     if (checkCalibration) {
       pushStyle();
-      fill(0, 128, 0, 128);
+      fill(0, 128, 0, 200);
       rect( 0, 0, imWidth, imHeight);
       popStyle();
     }
@@ -149,7 +149,7 @@ public class HeartFeedback  extends PaperScreen {
     textAlign(CENTER, CENTER);
 
     if (checkCalibration) {
-      fill(0, 192, 0, 128);
+      fill(0, 192, 0, 200);
       rect(0, 0, 420, 297);
     }
 

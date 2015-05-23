@@ -168,7 +168,7 @@ public class AmbientFeedback  extends PaperScreen {
     }
 
     if (checkCalibration) {
-      fill(0, 0, 255, 128);
+      fill(0, 0, 255, 200);
       rect(0, 0, 420, 297);
     }
     popStyle();
