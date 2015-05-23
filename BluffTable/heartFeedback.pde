@@ -81,7 +81,7 @@ public class HeartFeedback  extends PaperScreen {
 
     // set a plain black background color in order to override amient feedback
     pushStyle();
-    fill(0);
+    fill(0, 0, 0, 255);
     rect( 0, 0, imWidth, imHeight);
     popStyle();
 

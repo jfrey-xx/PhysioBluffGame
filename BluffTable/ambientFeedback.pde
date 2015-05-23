@@ -164,7 +164,7 @@ public class AmbientFeedback  extends PaperScreen {
     } else if (mode.is("explicit_OK") || mode.is("explicit_WARNING") || mode.is("explicit_STOP")) {
       drawFeedbackExplicit();
       // sepecial fuction to put image in right way + draw left to the board
-      DrawUtils.drawImage(currentGraphics, feedbackExplicit, 125, 62, 150, 150);
+      DrawUtils.drawImage(currentGraphics, feedbackExplicit, 160, 255, 100, 100);
     }
 
     if (checkCalibration) {
