@@ -127,8 +127,8 @@ class BeatingHeart {
 
 
   int HISTORY_SIZE = 400;
-  int MAX_RATE = 250;
-  int MIN_RATE = 40;
+  int MAX_RATE = 220;
+  int MIN_RATE = 30;
 
   private void drawRate() {
 
